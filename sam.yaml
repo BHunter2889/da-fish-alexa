@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  HelloLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: hello
+      Runtime: go1.x
+      CodeUri: ./deploy/hello.zip
+      Environment:
+        Variables:
+          S3_BUCKET: hello_lambda
+      Events:
+              AlexaSkillEvent:
+                Type: AlexaSkill
