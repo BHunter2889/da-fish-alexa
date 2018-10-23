@@ -14,12 +14,48 @@
   revision = "2d482ef09017ae953b1e8d5a6ddac5b696663a3c"
   version = "v1.6.0"
 
+[[projects]]
+  digest = "1:dbbeb8ddb0be949954c8157ee8439c2adfd8dc1c9510eb44a6e58cb68c3dce28"
+  name = "github.com/gorilla/context"
+  packages = ["."]
+  pruneopts = ""
+  revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
+  version = "v1.1.1"
+
+[[projects]]
+  digest = "1:c2c8666b4836c81a1d247bdf21c6a6fc1ab586538ab56f74437c2e0df5c375e1"
+  name = "github.com/gorilla/mux"
+  packages = ["."]
+  pruneopts = ""
+  revision = "e3702bed27f0d39777b0b37b664b6280e8ef8fbf"
+  version = "v1.6.2"
+
+[[projects]]
+  branch = "master"
+  digest = "1:89681af69aabf983edcbe50698f5b2fd239e4f86156860a664d1341789d628e3"
+  name = "github.com/mikeflynn/go-alexa"
+  packages = [
+    "skillserver",
+    "skillserver/dialog",
+  ]
+  pruneopts = ""
+  revision = "f347a0b229a6728225c4e3926b5108fefa244356"
+
+[[projects]]
+  digest = "1:b8c413e059022d3e00ca755703feacc7079495220e6c471606af26601d9aaefb"
+  name = "github.com/urfave/negroni"
+  packages = ["."]
+  pruneopts = ""
+  revision = "c6a59be0ce122566695fbd5e48a77f8f10c8a63a"
+  version = "v1.0.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "github.com/aws/aws-lambda-go/events",
     "github.com/aws/aws-lambda-go/lambda",
+    "github.com/mikeflynn/go-alexa/skillserver",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
