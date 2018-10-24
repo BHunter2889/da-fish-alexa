@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 
 	"github.com/aws/aws-lambda-go/events"
-	//"github.com/aws/aws-lambda-go/lambda"
 	alexa "github.com/mikeflynn/go-alexa/skillserver"
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the
@@ -85,6 +85,6 @@ func EchoIntentHandler(echoReq *alexa.EchoRequest, echoResp *alexa.EchoResponse)
 }
 
 func main() {
-	//lambda.Start(Handler)
-	alexa.Run(Applications, "3000")
+	lambda.Start(Handler)
+	//alexa.Run(Applications, "3000")
 }

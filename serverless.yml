@@ -65,6 +65,11 @@ functions:
       - http:
           path: world
           method: get
+  da-fish:
+    handler: bin/da-fish
+    events:
+      - alexaSkill: amzn1.ask.skill.2150256e-e459-46ee-b501-fa2bf46f70c3
+
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
