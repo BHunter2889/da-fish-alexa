@@ -3,11 +3,17 @@ package da_fish
 import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/BHunter2889/da-fish/alexa"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/kms"
 	"net/url"
 	"net/http"
 	"io/ioutil"
 	"encoding/xml"
+	"os"
+	"encoding/base64"
 )
+
+
 
 func IntentDispatcher(request alexa.Request) alexa.Response {
 	var response alexa.Response
@@ -94,6 +100,10 @@ func RequestFeed(mode string) (FeedResponse, error) {
 		return feedResponse, nil
 	}
 }
+
+
+
+
 
 func Handler(request alexa.Request) (alexa.Response, error) {
 	return IntentDispatcher(request), nil

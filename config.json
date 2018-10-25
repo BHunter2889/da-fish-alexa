@@ -1,0 +1,4 @@
+{
+  "alexa-api-url-us": "https://api.amazonalexa.com",
+  "alexa-location-endpoint": "/v1/devices/*deviceId*/settings/address/countryAndPostalCode"
+}
