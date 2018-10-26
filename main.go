@@ -3,17 +3,17 @@ package da_fish
 import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/BHunter2889/da-fish/alexa"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/kms"
 	"net/url"
 	"net/http"
 	"io/ioutil"
 	"encoding/xml"
-	"os"
-	"encoding/base64"
 )
 
+var (
+	cfg = DaFishConfig{}
 
+	DeviceLocService alexa.DeviceService
+)
 
 func IntentDispatcher(request alexa.Request) alexa.Response {
 	var response alexa.Response
@@ -34,9 +34,24 @@ func IntentDispatcher(request alexa.Request) alexa.Response {
 	return response
 }
 
-//TODO
 func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("Today's Fishing Forecast", "Fish Rating is provided here.")
+	deviceId := request.Context.System.Device.DeviceID
+	apiAccessToken := request.Context.System.APIAccessToken
+	apiEndpoint := request.Context.System.APIEndpoint
+
+	DeviceLocService = alexa.DeviceService{
+		URL:    apiEndpoint,
+		Id:     deviceId,
+		Token:  apiAccessToken,
+		Client: http.Client{},
+	}
+
+	resp, _ := DeviceLocService.GetDeviceLocation()
+
+	//TODO - Start Here, Use Location response to GeoCode
+
+	return alexa.NewSimpleResponse("Today's Fishing Forecast", "You caught me! Like a young fish, I'm still learning. "+
+		"Please be patient with me, I'll have forecasts for you soon!")
 }
 
 //TODO Remove
@@ -101,14 +116,14 @@ func RequestFeed(mode string) (FeedResponse, error) {
 	}
 }
 
-
-
-
-
 func Handler(request alexa.Request) (alexa.Response, error) {
 	return IntentDispatcher(request), nil
 }
 
+// Load Properties before proceeding
+func init() {
+	cfg.LoadConfig()
+}
 func main() {
 	lambda.Start(Handler)
 }

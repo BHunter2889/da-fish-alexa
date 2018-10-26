@@ -70,3 +70,10 @@ type Payload struct {
 	Content string `json:"content,omitempty"`
 	Image   Image  `json:"image,omitempty"`
 }
+
+// Response(s) from requests made back to the Alexa Api
+
+type DeviceLocationResponse struct {
+	CountryCode string `json:"countryCode"`
+	PostalCode string `json:"postalCode"`
+}

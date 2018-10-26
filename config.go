@@ -17,10 +17,10 @@ type DaFishConfig struct {
 }
 
 // Defining as constants rather than reading from config file until resource monitoring is setup
-const (
-	AlexaLocEndpoint = "/v1/devices/*deviceId*/settings/address/countryAndPostalCode"
-	AlexaApiBaseUrl  = "https://api.amazonalexa.com"
-)
+// AlexaApiBaseUrl  = "https://api.amazonalexa.com"  --- US Endpoint. Will grab this from the incoming Request payload.
+// %i - reserved for DeviceId
+const AlexaLocEndpoint = "/v1/devices/%i/settings/address/countryAndPostalCode"
+
 
 var (
 	KMS    = NewKMS()
@@ -55,7 +55,6 @@ func NewKMS() *kms.KMS {
 }
 
 func (cfg *DaFishConfig) LoadConfig() {
-	cfg.AlexaApiUrl = AlexaApiBaseUrl
 	cfg.AlexaLocEndpoint = AlexaLocEndpoint
 	cfg.GeoKey = geoKeyDecrypt
 	cfg.GeoUrl = geoUrl

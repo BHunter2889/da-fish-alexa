@@ -14,13 +14,13 @@ type Request struct {
 }
 
 type Session struct {
-	New         bool   `json:"new"`
-	SessionID   string `json:"sessionId"`
+	New       bool   `json:"new"`
+	SessionID string `json:"sessionId"`
 	Application struct {
 		ApplicationID string `json:"applicationId"`
 	} `json:"application"`
 	Attributes map[string]interface{} `json:"attributes"`
-	User       struct {
+	User struct {
 		UserID      string `json:"userId"`
 		AccessToken string `json:"accessToken,omitempty"`
 	} `json:"user"`
@@ -29,7 +29,8 @@ type Session struct {
 type Context struct {
 	System struct {
 		APIAccessToken string `json:"apiAccessToken"`
-		Device         struct {
+		APIEndpoint    string `json:"apiEndpoint"`
+		Device struct {
 			DeviceID string `json:"deviceId,omitempty"`
 		} `json:"device,omitempty"`
 		Application struct {
