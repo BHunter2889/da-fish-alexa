@@ -46,13 +46,40 @@
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
+    "private/protocol/restjson",
     "private/protocol/xml/xmlutil",
     "service/kms",
     "service/sts",
+    "service/xray",
   ]
   pruneopts = ""
   revision = "c446a547f59665b7ce54ac57bd8f8b04e5179563"
   version = "v1.15.62"
+
+[[projects]]
+  digest = "1:8b1b7e927e783655ee8fbfe9da9ee3960a100313244308c0a0f5e977ff3001f4"
+  name = "github.com/aws/aws-xray-sdk-go"
+  packages = [
+    "header",
+    "internal/plugins",
+    "pattern",
+    "resources",
+    "strategy/ctxmissing",
+    "strategy/exception",
+    "strategy/sampling",
+    "xray",
+  ]
+  pruneopts = ""
+  revision = "32670489212454717deeafb8da5dbb1da0299749"
+  version = "v0.9.4"
+
+[[projects]]
+  digest = "1:9897221091d9b3ca7d1a8d350bd8ce709118b5134d68f6315b2010736d3e9378"
+  name = "github.com/cihub/seelog"
+  packages = ["."]
+  pruneopts = ""
+  revision = "d2c6e5aa9fbfdd1c624e140287063c7730654115"
+  version = "v2.6"
 
 [[projects]]
   branch = "master"
@@ -100,6 +127,14 @@
   revision = "f347a0b229a6728225c4e3926b5108fefa244356"
 
 [[projects]]
+  digest = "1:7365acd48986e205ccb8652cc746f09c8b7876030d53710ea6ef7d0bd0dcd7ca"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = ""
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
   digest = "1:b8c413e059022d3e00ca755703feacc7079495220e6c471606af26601d9aaefb"
   name = "github.com/urfave/negroni"
   packages = ["."]
@@ -115,6 +150,8 @@
     "github.com/aws/aws-lambda-go/lambda",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/kms",
+    "github.com/aws/aws-sdk-go/service/xray",
+    "github.com/aws/aws-xray-sdk-go/xray",
     "github.com/fnproject/fdk-go",
     "github.com/mikeflynn/go-alexa/skillserver",
   ]

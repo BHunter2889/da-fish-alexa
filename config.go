@@ -1,41 +1,64 @@
 package da_fish
 
 import (
-	"os"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"encoding/base64"
 	"github.com/aws/aws-sdk-go/service/kms"
+	"github.com/aws/aws-xray-sdk-go/xray"
+	"os"
 )
 
-type Config struct {
-	AlexaApiUrl           string
-	AlexaLocationEndpoint string
-	GeoKey                string
-	GeoUrl                string
-	FishRatingUrl         string
+type DaFishConfig struct {
+	AlexaApiUrl      string
+	AlexaLocEndpoint string
+	GeoKey           string
+	GeoUrl           string
+	FishRatingUrl    string
 }
 
-var geoKeyEncrypt string = os.Getenv("GEO_KEY")
-var fishRatingUrlEncrypt string = os.Getenv("FISH_RATING_SERVICE_URL")
-var geoUrl string = os.Getenv("GEO_SERVICE_URL")
+// Defining as constants rather than reading from config file until resource monitoring is setup
+const (
+	AlexaLocEndpoint = "/v1/devices/*deviceId*/settings/address/countryAndPostalCode"
+	AlexaApiBaseUrl  = "https://api.amazonalexa.com"
+)
 
-var geoKeyDecrypt string
-var fishRatingUrlDecrypt string
+var (
+	KMS    = NewKMS()
+	sess   = session.Must(session.NewSession())
+	config = new(DaFishConfig)
 
-func init() {
-	kmsClient := kms.New(session.New())
-	//TODO
-	decodedBytes, err := base64.StdEncoding.DecodeString(geoKeyDecrypt)
+	geoKeyDecrypt        = decrypt(os.Getenv("GEO_KEY"))
+	fishRatingUrlDecrypt = decrypt(os.Getenv("FISH_RATING_SERVICE_URL"))
+	geoUrl               = os.Getenv("GEO_SERVICE_URL")
+)
+
+func decrypt(s string) string {
+	decodedBytes, err := base64.StdEncoding.DecodeString(s)
 	if err != nil {
 		panic(err)
 	}
 	input := &kms.DecryptInput{
 		CiphertextBlob: decodedBytes,
 	}
-	response, err := kmsClient.Decrypt(input)
+	response, err := KMS.Decrypt(input)
 	if err != nil {
 		panic(err)
 	}
 	// Plaintext is a byte array, so convert to string
-	geoKeyDecrypt = string(response.Plaintext[:])
+	return string(response.Plaintext[:])
+}
+
+// Wrap in Xray so we can detail any errors
+func NewKMS() *kms.KMS {
+	c := kms.New(sess)
+	xray.AWS(c.Client)
+	return c
+}
+
+func (cfg *DaFishConfig) LoadConfig() {
+	cfg.AlexaApiUrl = AlexaApiBaseUrl
+	cfg.AlexaLocEndpoint = AlexaLocEndpoint
+	cfg.GeoKey = geoKeyDecrypt
+	cfg.GeoUrl = geoUrl
+	cfg.FishRatingUrl = fishRatingUrlDecrypt
 }

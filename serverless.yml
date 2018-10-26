@@ -53,22 +53,22 @@ package:
    - ./bin/**
 
 functions:
-  hello:
-    handler: bin/hello
-    events:
-      - http:
-          path: hello
-          method: get
-  world:
-    handler: bin/world
-    events:
-      - http:
-          path: world
-          method: get
   da-fish:
     handler: bin/da-fish
     events:
       - alexaSkill: amzn1.ask.skill.2150256e-e459-46ee-b501-fa2bf46f70c3
+#  hello:
+  #    handler: bin/hello
+  #    events:
+  #      - http:
+  #          path: hello
+  #          method: get
+  #  world:
+  #    handler: bin/world
+  #    events:
+  #      - http:
+  #          path: world
+  #          method: get
 
 
 #    The following are a few example events you can configure
@@ -116,7 +116,3 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
-
-plugins:
-  - serverless-alexa-plugin
-  - serverless-alexa-skills
