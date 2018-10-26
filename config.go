@@ -25,7 +25,6 @@ const (
 var (
 	KMS    = NewKMS()
 	sess   = session.Must(session.NewSession())
-	config = new(DaFishConfig)
 
 	geoKeyDecrypt        = decrypt(os.Getenv("GEO_KEY"))
 	fishRatingUrlDecrypt = decrypt(os.Getenv("FISH_RATING_SERVICE_URL"))
