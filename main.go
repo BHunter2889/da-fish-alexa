@@ -3,16 +3,21 @@ package da_fish
 import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/BHunter2889/da-fish/alexa"
+	"github.com/BHunter2889/da-fish/services"
 	"net/url"
 	"net/http"
 	"io/ioutil"
 	"encoding/xml"
+	"log"
 )
+// TODO - add context.Context for xray tracing
 
 var (
 	cfg = DaFishConfig{}
+	defaultUserIp = "127.0.0.1"
 
-	DeviceLocService alexa.DeviceService
+	DeviceLocService services.DeviceService
+	GeocodeService	services.GeocodeService
 )
 
 func IntentDispatcher(request alexa.Request) alexa.Response {
@@ -39,7 +44,8 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 	apiAccessToken := request.Context.System.APIAccessToken
 	apiEndpoint := request.Context.System.APIEndpoint
 
-	DeviceLocService = alexa.DeviceService{
+	// Get Location registered to user device
+	DeviceLocService = services.DeviceService{
 		URL:    apiEndpoint,
 		Id:     deviceId,
 		Token:  apiAccessToken,
@@ -47,8 +53,22 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 	}
 
 	resp, _ := DeviceLocService.GetDeviceLocation()
+	log.Print(resp)
 
-	//TODO - Start Here, Use Location response to GeoCode
+	// Get Geocode coordinates from retrieved location
+	GeocodeService = services.GeocodeService{
+		URL: cfg.GeoUrl,
+		UsrIp: defaultUserIp,
+		CountryRegion: resp.CountryCode,
+		PostalCode: resp.PostalCode,
+		Key: cfg.GeoKey,
+	}
+
+	geoPoint, _ := GeocodeService.GetGeoPoint()
+	log.Printf("Geo: {lat: %f, lon: %f}", geoPoint.Coordinates[0], geoPoint.Coordinates[1])
+
+	//Get Fishing Forecast using coordinates
+	//TODO - Start Here,  use GeoPoint to get  FishRating
 
 	return alexa.NewSimpleResponse("Today's Fishing Forecast", "You caught me! Like a young fish, I'm still learning. "+
 		"Please be patient with me, I'll have forecasts for you soon!")

@@ -1,9 +1,10 @@
-package alexa
+package services
 
 import (
 	"net/http"
 	"encoding/json"
 	"fmt"
+	"github.com/BHunter2889/da-fish/alexa"
 )
 
 type DeviceService struct {
@@ -14,7 +15,7 @@ type DeviceService struct {
 	Client http.Client
 }
 
-func (s *DeviceService) GetDeviceLocation() (*DeviceLocationResponse, error) {
+func (s *DeviceService) GetDeviceLocation() (*alexa.DeviceLocationResponse, error) {
 	endp := fmt.Sprintf(s.Endpoint, s.Id)
 	reqUrl := fmt.Sprintf("%s%s", s.URL, endp)
 	req, err := http.NewRequest(http.MethodGet, reqUrl, nil)
@@ -30,7 +31,7 @@ func (s *DeviceService) GetDeviceLocation() (*DeviceLocationResponse, error) {
 	}
 	defer resp.Body.Close()
 
-	deviceLocationResponse := DeviceLocationResponse{}
+	deviceLocationResponse := alexa.DeviceLocationResponse{}
 
 	if err := json.NewDecoder(resp.Body).Decode(&deviceLocationResponse); err != nil {
 		return nil, err
