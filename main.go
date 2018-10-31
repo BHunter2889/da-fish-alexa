@@ -54,7 +54,6 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 
 	resp, _ := DeviceLocService.GetDeviceLocation()
 	log.Print(resp)
-
 	// Get Geocode coordinates from retrieved location
 	GeocodeService = services.GeocodeService{
 		URL: cfg.GeoUrl,
