@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"encoding/json"
 	"fmt"
-	"github.com/BHunter2889/da-fish/alexa"
+	"github.com/BHunter2889/da-fish-alexa/alexa"
 )
 
 type DeviceService struct {

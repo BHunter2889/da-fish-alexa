@@ -46,11 +46,9 @@
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
-    "private/protocol/restjson",
     "private/protocol/xml/xmlutil",
     "service/kms",
     "service/sts",
-    "service/xray",
   ]
   pruneopts = ""
   revision = "c446a547f59665b7ce54ac57bd8f8b04e5179563"
@@ -80,17 +78,6 @@
   pruneopts = ""
   revision = "d2c6e5aa9fbfdd1c624e140287063c7730654115"
   version = "v2.6"
-
-[[projects]]
-  branch = "master"
-  digest = "1:ac7ff0abd3d0f08a01e66a9d4da4cec443ef1045bfc687b300e12453348bac55"
-  name = "github.com/fnproject/fdk-go"
-  packages = [
-    ".",
-    "utils",
-  ]
-  pruneopts = ""
-  revision = "1c783fe496250a3e27445273fb43cace6fd4ee2b"
 
 [[projects]]
   digest = "1:dbbeb8ddb0be949954c8157ee8439c2adfd8dc1c9510eb44a6e58cb68c3dce28"
@@ -150,9 +137,7 @@
     "github.com/aws/aws-lambda-go/lambda",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/kms",
-    "github.com/aws/aws-sdk-go/service/xray",
     "github.com/aws/aws-xray-sdk-go/xray",
-    "github.com/fnproject/fdk-go",
     "github.com/mikeflynn/go-alexa/skillserver",
   ]
   solver-name = "gps-cdcl"

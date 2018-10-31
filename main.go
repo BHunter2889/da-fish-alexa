@@ -1,9 +1,9 @@
-package da_fish
+package main
 
 import (
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/BHunter2889/da-fish/alexa"
-	"github.com/BHunter2889/da-fish/services"
+	"github.com/BHunter2889/da-fish-alexa/alexa"
+	"github.com/BHunter2889/da-fish-alexa/services"
 	"net/url"
 	"net/http"
 	"io/ioutil"
@@ -13,7 +13,7 @@ import (
 // TODO - add context.Context for xray tracing
 
 var (
-	cfg = DaFishConfig{}
+	cfg *DaFishConfig
 	defaultUserIp = "127.0.0.1"
 
 	DeviceLocService services.DeviceService
@@ -142,6 +142,7 @@ func Handler(request alexa.Request) (alexa.Response, error) {
 
 // Load Properties before proceeding
 func init() {
+	cfg = new(DaFishConfig)
 	cfg.LoadConfig()
 }
 func main() {
