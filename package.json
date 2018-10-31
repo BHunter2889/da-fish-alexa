@@ -1,0 +1,9 @@
+{
+  "name": "da_fish",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless-go-build": "0.0.6"
+  }
+}

@@ -1,4 +1,4 @@
-package da_fish
+package main
 
 import (
 	"github.com/aws/aws-lambda-go/lambda"
