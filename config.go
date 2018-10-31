@@ -4,7 +4,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"encoding/base64"
 	"github.com/aws/aws-sdk-go/service/kms"
-	"github.com/aws/aws-xray-sdk-go/xray"
 	"os"
 )
 
@@ -48,9 +47,10 @@ func decrypt(s string) string {
 }
 
 // Wrap in Xray so we can detail any errors
+// TODO - Fix Xray
 func NewKMS() *kms.KMS {
 	c := kms.New(sess)
-	xray.AWS(c.Client)
+	//xray.AWS(c.Client)
 	return c
 }
 
