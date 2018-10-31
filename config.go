@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/aws/aws-sdk-go/aws/session"
 	"encoding/base64"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"os"
 )
@@ -20,10 +20,9 @@ type DaFishConfig struct {
 // %i - reserved for DeviceId
 const AlexaLocEndpoint = "/v1/devices/%i/settings/address/countryAndPostalCode"
 
-
 var (
-	KMS    = NewKMS()
-	sess   = session.Must(session.NewSession())
+	KMS  = NewKMS()
+	sess = session.Must(session.NewSession())
 
 	geoKeyDecrypt        = decrypt(os.Getenv("GEO_KEY"))
 	fishRatingUrlDecrypt = decrypt(os.Getenv("FISH_RATING_SERVICE_URL"))

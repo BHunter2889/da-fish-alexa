@@ -1,50 +1,50 @@
 package services
 
 import (
-	"net/http"
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 )
 
 type ForecasterService struct {
-	URL string
-	Lat float64
-	Lon float64
+	URL    string
+	Lat    float64
+	Lon    float64
 	Client http.Client
 }
 type ForecasterResponse struct {
 	Currently struct {
-		ApparentTemperature float64 `json:"apparentTemperature"`
-		CloudCover float64 `json:"cloudCover"`
-		DewPoint float64 `json:"dewPoint"`
-		Humidity float64 `json:"humidity"`
-		Icon string `json:"icon"`
-		NearestStormBearing int `json:"nearestStormBearing"`
-		NearestStormDistance int `json:"nearestStormDistance"`
-		Ozone float64 `json:"ozone"`
-		PrecipIntensity float64 `json:"precipIntensity"`
-		PrecipProbability float64 `json:"precipProbability"`
+		ApparentTemperature  float64 `json:"apparentTemperature"`
+		CloudCover           float64 `json:"cloudCover"`
+		DewPoint             float64 `json:"dewPoint"`
+		Humidity             float64 `json:"humidity"`
+		Icon                 string  `json:"icon"`
+		NearestStormBearing  int     `json:"nearestStormBearing"`
+		NearestStormDistance int     `json:"nearestStormDistance"`
+		Ozone                float64 `json:"ozone"`
+		PrecipIntensity      float64 `json:"precipIntensity"`
+		PrecipProbability    float64 `json:"precipProbability"`
 		//pressure: 1009.26
-		Summary string `json:"summary"`
+		Summary     string  `json:"summary"`
 		Temperature float64 `json:"temperature"`
-		Time int64
+		Time        int64
 		//uvIndex: 0
 		//visibility: 10
-		WindBearing int `json:"windBearing"`
-		WindGust float64 `json:"windGust"`
-		WindSpeed float64 `json:"windSpeed"`
+		WindBearing int     `json:"windBearing"`
+		WindGust    float64 `json:"windGust"`
+		WindSpeed   float64 `json:"windSpeed"`
 	} `json:"currently"`
-	Hourly[] Hour `json:"hourly"`
+	Hourly []Hour `json:"hourly"`
 }
 
 type Hour struct {
-	Icon string `json:"icon"`
+	Icon              string  `json:"icon"`
 	PrecipProbability float64 `json:"precipProbability"`
-	Rating uint `json:"rating"`
-	Temperature float64 `json:"temperature"`
-	Time int64 `json:"time"`
-	WindSpeed float64 `json:"windSpeed"`
+	Rating            uint    `json:"rating"`
+	Temperature       float64 `json:"temperature"`
+	Time              int64   `json:"time"`
+	WindSpeed         float64 `json:"windSpeed"`
 }
 
 func (s *ForecasterService) GetCurrentFishingRating() ([]Hour, error) {

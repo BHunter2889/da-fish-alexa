@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/aws/aws-lambda-go/lambda"
+	"fmt"
 	"github.com/BHunter2889/da-fish-alexa/alexa"
 	"github.com/BHunter2889/da-fish-alexa/services"
-	"net/http"
+	"github.com/aws/aws-lambda-go/lambda"
 	"log"
-	"fmt"
+	"net/http"
 )
 
 // TODO - add context.Context for xray tracing
@@ -47,7 +47,7 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 				"Please be patient with me, I'll have forecasts for you soon!")
 		}
 
-		return resp;
+		return resp
 	}()
 
 	deviceId := request.Context.System.Device.DeviceID

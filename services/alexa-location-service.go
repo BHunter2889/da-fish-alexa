@@ -1,18 +1,18 @@
 package services
 
 import (
-	"net/http"
 	"encoding/json"
 	"fmt"
 	"github.com/BHunter2889/da-fish-alexa/alexa"
+	"net/http"
 )
 
 type DeviceService struct {
-	URL string
-	Id string
-	Token string
+	URL      string
+	Id       string
+	Token    string
 	Endpoint string
-	Client http.Client
+	Client   http.Client
 }
 
 func (s *DeviceService) GetDeviceLocation() (*alexa.DeviceLocationResponse, error) {

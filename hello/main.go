@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 
 	"github.com/aws/aws-lambda-go/events"
-	alexa "github.com/mikeflynn/go-alexa/skillserver"
 	"github.com/aws/aws-lambda-go/lambda"
+	alexa "github.com/mikeflynn/go-alexa/skillserver"
 )
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the
@@ -74,7 +74,7 @@ func Handler(ctx context.Context) (Response, error) {
 
 var Applications = map[string]interface{}{
 	"/echo/helloworld": alexa.EchoApplication{ // Route
-		AppID: "xxxxxxxx", // Echo App ID from Amazon Dashboard
+		AppID:    "xxxxxxxx", // Echo App ID from Amazon Dashboard
 		OnIntent: EchoIntentHandler,
 		OnLaunch: EchoIntentHandler,
 	},

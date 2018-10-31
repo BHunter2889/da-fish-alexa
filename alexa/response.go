@@ -75,5 +75,5 @@ type Payload struct {
 
 type DeviceLocationResponse struct {
 	CountryCode string `json:"countryCode"`
-	PostalCode string `json:"postalCode"`
+	PostalCode  string `json:"postalCode"`
 }
