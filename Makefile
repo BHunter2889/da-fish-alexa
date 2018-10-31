@@ -1,6 +1,6 @@
 build:
 	dep ensure -v
-	env GOOS=linux go build -ldflags="-s -w" -o bin/da-fish-alexa ./
+	env GOOS=linux go build -ldflags="-s -w" -x -o bin/da-fish-alexa ./
 
 .PHONY: clean
 clean:
