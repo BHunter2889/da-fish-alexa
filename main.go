@@ -12,8 +12,8 @@ import (
 // TODO - add context.Context for xray tracing
 
 var (
-	cfg           *DaFishConfig
-	defaultUserIp = "127.0.0.1"
+	//cfg           *DaFishConfig
+	//defaultUserIp = "127.0.0.1"
 
 	//DeviceLocService  services.DeviceService
 	//GeocodeService    services.GeocodeService
@@ -153,8 +153,8 @@ func Handler(request alexa.Request) (alexa.Response, error) {
 
 // Load Properties before proceeding
 func init() {
-	cfg = new(DaFishConfig)
-	cfg.LoadConfig()
+	//cfg = new(DaFishConfig)
+	//cfg.LoadConfig()
 }
 func main() {
 	lambda.Start(Handler)
