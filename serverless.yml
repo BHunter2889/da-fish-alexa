@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: da_fish # NOTE: update this with your service name
+service: da-fish # NOTE: update this with your service name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -86,8 +86,8 @@ package:
 
 
 functions:
-  da_fish:
-    handler: github.com/BHunter2889/da_fish
+  da-fish:
+    handler: bin/da-fish-alexa
     events:
       - alexaSkill: amzn1.ask.skill.2150256e-e459-46ee-b501-fa2bf46f70c3
 #  hello:
