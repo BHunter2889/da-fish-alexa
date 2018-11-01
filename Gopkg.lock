@@ -3,30 +3,24 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ea9d67955da1a9c228178f38813b18a08d468562dcc8da66e12bd79856c4dbc2"
   name = "github.com/BHunter2889/da-fish-alexa"
   packages = [
     "alexa",
-    "services",
+    "services"
   ]
-  pruneopts = ""
-  revision = "91c5ce0961333650bd9279f712ed533ad079a55d"
+  revision = "37cae6c03dec618f4c0f05d0976b7464c6b29539"
 
 [[projects]]
-  digest = "1:8b55da6790eeade578c1fd4ebaa5b0e641072172e1d743f3cb945ae73af463f9"
   name = "github.com/aws/aws-lambda-go"
   packages = [
-    "events",
     "lambda",
     "lambda/messages",
-    "lambdacontext",
+    "lambdacontext"
   ]
-  pruneopts = ""
   revision = "2d482ef09017ae953b1e8d5a6ddac5b696663a3c"
   version = "v1.6.0"
 
 [[projects]]
-  digest = "1:55bc1845e9c00dba926654792cd419fb73900f11bdf33746e31621d7281f1d2f"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -59,65 +53,19 @@
     "private/protocol/rest",
     "private/protocol/xml/xmlutil",
     "service/kms",
-    "service/sts",
+    "service/sts"
   ]
-  pruneopts = ""
-  revision = "c446a547f59665b7ce54ac57bd8f8b04e5179563"
-  version = "v1.15.62"
+  revision = "870fa4307c5f57c14153c695df7b87af1acdcbf1"
+  version = "v1.15.66"
 
 [[projects]]
-  digest = "1:dbbeb8ddb0be949954c8157ee8439c2adfd8dc1c9510eb44a6e58cb68c3dce28"
-  name = "github.com/gorilla/context"
-  packages = ["."]
-  pruneopts = ""
-  revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
-  version = "v1.1.1"
-
-[[projects]]
-  digest = "1:c2c8666b4836c81a1d247bdf21c6a6fc1ab586538ab56f74437c2e0df5c375e1"
-  name = "github.com/gorilla/mux"
-  packages = ["."]
-  pruneopts = ""
-  revision = "e3702bed27f0d39777b0b37b664b6280e8ef8fbf"
-  version = "v1.6.2"
-
-[[projects]]
-  digest = "1:6f49eae0c1e5dab1dafafee34b207aeb7a42303105960944828c2079b92fc88e"
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
-  pruneopts = ""
   revision = "0b12d6b5"
-
-[[projects]]
-  branch = "master"
-  digest = "1:89681af69aabf983edcbe50698f5b2fd239e4f86156860a664d1341789d628e3"
-  name = "github.com/mikeflynn/go-alexa"
-  packages = [
-    "skillserver",
-    "skillserver/dialog",
-  ]
-  pruneopts = ""
-  revision = "f347a0b229a6728225c4e3926b5108fefa244356"
-
-[[projects]]
-  digest = "1:b8c413e059022d3e00ca755703feacc7079495220e6c471606af26601d9aaefb"
-  name = "github.com/urfave/negroni"
-  packages = ["."]
-  pruneopts = ""
-  revision = "c6a59be0ce122566695fbd5e48a77f8f10c8a63a"
-  version = "v1.0.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = [
-    "github.com/BHunter2889/da-fish-alexa/alexa",
-    "github.com/BHunter2889/da-fish-alexa/services",
-    "github.com/aws/aws-lambda-go/events",
-    "github.com/aws/aws-lambda-go/lambda",
-    "github.com/aws/aws-sdk-go/aws/session",
-    "github.com/aws/aws-sdk-go/service/kms",
-    "github.com/mikeflynn/go-alexa/skillserver",
-  ]
+  inputs-digest = "2b176d01609dba53b574bfe2e70b1b1768710db2fbd290bf2ed962c362f3d92b"
   solver-name = "gps-cdcl"
   solver-version = 1

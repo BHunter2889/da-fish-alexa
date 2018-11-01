@@ -1,23 +1,23 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/BHunter2889/da-fish-alexa/alexa"
-	//"github.com/BHunter2889/da-fish-alexa/services"
+	"github.com/BHunter2889/da-fish-alexa/services"
 	"github.com/aws/aws-lambda-go/lambda"
-	//"log"
-	//"net/http"
+	"log"
+	"net/http"
 )
 
 // TODO - add context.Context for xray tracing
 
 var (
-	//cfg           *DaFishConfig
-	//defaultUserIp = "127.0.0.1"
+	cfg           *DaFishConfig
+	defaultUserIp = "127.0.0.1"
 
-	//DeviceLocService  services.DeviceService
-	//GeocodeService    services.GeocodeService
-	//ForecasterService services.ForecasterService
+	DeviceLocService  services.DeviceService
+	GeocodeService    services.GeocodeService
+	ForecasterService services.ForecasterService
 )
 
 func IntentDispatcher(request alexa.Request) alexa.Response {
@@ -40,8 +40,8 @@ func IntentDispatcher(request alexa.Request) alexa.Response {
 }
 
 func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
-	return alexa.NewSimpleResponse("Today's Fishing Forecast", "You caught me! Like a young fish, I'm still learning. "+
-		"Please be patient with me, I'll have forecasts for you soon!")
+	//return alexa.NewSimpleResponse("Today's Fishing Forecast", "You caught me! Like a young fish, I'm still learning. "+
+	//	"Please be patient with me, I'll have forecasts for you soon!")
 	//defer func() alexa.Response {
 	//	var resp alexa.Response
 	//	if r := recover(); r != nil {
@@ -50,87 +50,87 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 	//
 	//	return resp
 	//}()
-	//
-	//deviceId := request.Context.System.Device.DeviceID
-	//apiAccessToken := request.Context.System.APIAccessToken
-	//apiEndpoint := request.Context.System.APIEndpoint
-	//
-	//// Get Location registered to user device
-	//DeviceLocService = services.DeviceService{
-	//	URL:    apiEndpoint,
-	//	Id:     deviceId,
-	//	Token:  apiAccessToken,
-	//	Client: http.Client{},
-	//}
-	//
-	//resp, err := DeviceLocService.GetDeviceLocation()
-	//if err != nil {
-	//	panic("trouble getting your zip code area, please ensure you have granted permission for this so that " +
-	//		"Da Fish can determine the fishing forecast for your area.")
-	//}
-	//log.Print(resp)
-	//// Get Geocode coordinates from retrieved location
-	//GeocodeService = services.GeocodeService{
-	//	URL:           cfg.GeoUrl,
-	//	UsrIp:         defaultUserIp,
-	//	CountryRegion: resp.CountryCode,
-	//	PostalCode:    resp.PostalCode,
-	//	Key:           cfg.GeoKey,
-	//	Client:        http.Client{},
-	//}
-	//
-	//geoPoint, err := GeocodeService.GetGeoPoint()
-	//if err != nil {
-	//	panic("trouble getting information on the area ")
-	//}
-	//log.Printf("Geo: {lat: %f, lon: %f}", geoPoint.Coordinates[0], geoPoint.Coordinates[1])
-	//
-	////Get Fishing Forecast using coordinates
-	//ForecasterService = services.ForecasterService{
-	//	URL:    cfg.FishRatingUrl,
-	//	Lat:    geoPoint.Coordinates[0],
-	//	Lon:    geoPoint.Coordinates[1],
-	//	Client: http.Client{},
-	//}
-	//
-	//fr, err := ForecasterService.GetCurrentFishingRating()
-	//if err != nil {
-	//	panic("Trouble Getting Fishing Forecast ")
-	//}
-	//var (
-	//	t string
-	//	r uint
-	//	w float64
-	//)
-	//if fr[0].Rating > fr[1].Rating {
-	//	t, r, w = "right now", fr[0].Rating, fr[0].WindSpeed
-	//} else {
-	//	t, r, w = "two hours from now", fr[1].Rating, fr[1].WindSpeed
-	//}
-	//
-	//var fcstBuilder alexa.SSMLBuilder
-	//if r < 3 {
-	//	fcstBuilder.Say("It looks like the best time to go fishing over the next couple of hours is, ")
-	//	fcstBuilder.Pause("250")
-	//	fcstBuilder.Say("well, ")
-	//	fcstBuilder.Pause("250")
-	//	fcstBuilder.Say(
-	//		fmt.Sprintf("probably some other time with a top rating well below average and a wind speed of %f.", w))
-	//} else if r >= 3 && r <= 4 {
-	//	fcstBuilder.Say(fmt.Sprintf("It looks like a decent or possibly better time to go fishing %s with a forecast rating "+
-	//		"just on the plus side.", t))
-	//	fcstBuilder.Pause("500")
-	//	fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %f.", w))
-	//} else {
-	//	fcstBuilder.Say("The fish appear to be biting!")
-	//	fcstBuilder.Pause("750")
-	//	fcstBuilder.Say(fmt.Sprintf("Over the next couple hours the fishing looks great "+
-	//		"with the best time to go being %s with a forecast rating well over the norm. ", t))
-	//	fcstBuilder.Pause("500")
-	//	fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %f.", w))
-	//}
 
-	//return alexa.NewSSMLResponse("Today's Fishing Forecast", fcstBuilder.Build())
+	deviceId := request.Context.System.Device.DeviceID
+	apiAccessToken := request.Context.System.APIAccessToken
+	apiEndpoint := request.Context.System.APIEndpoint
+
+	// Get Location registered to user device
+	DeviceLocService = services.DeviceService{
+		URL:    apiEndpoint,
+		Id:     deviceId,
+		Token:  apiAccessToken,
+		Client: http.Client{},
+	}
+
+	resp, err := DeviceLocService.GetDeviceLocation()
+	if err != nil {
+		panic("trouble getting your zip code area, please ensure you have granted permission for this so that " +
+			"Da Fish can determine the fishing forecast for your area.")
+	}
+	log.Print(resp)
+	// Get Geocode coordinates from retrieved location
+	GeocodeService = services.GeocodeService{
+		URL:           cfg.GeoUrl,
+		UsrIp:         defaultUserIp,
+		CountryRegion: resp.CountryCode,
+		PostalCode:    resp.PostalCode,
+		Key:           cfg.GeoKey,
+		Client:        http.Client{},
+	}
+
+	geoPoint, err := GeocodeService.GetGeoPoint()
+	if err != nil {
+		panic("trouble getting information on the area ")
+	}
+	log.Printf("Geo: {lat: %f, lon: %f}", geoPoint.Coordinates[0], geoPoint.Coordinates[1])
+
+	//Get Fishing Forecast using coordinates
+	ForecasterService = services.ForecasterService{
+		URL:    cfg.FishRatingUrl,
+		Lat:    geoPoint.Coordinates[0],
+		Lon:    geoPoint.Coordinates[1],
+		Client: http.Client{},
+	}
+
+	fr, err := ForecasterService.GetCurrentFishingRating()
+	if err != nil {
+		panic("Trouble Getting Fishing Forecast ")
+	}
+	var (
+		t string
+		r uint
+		w float64
+	)
+	if fr[0].Rating > fr[1].Rating {
+		t, r, w = "right now", fr[0].Rating, fr[0].WindSpeed
+	} else {
+		t, r, w = "two hours from now", fr[1].Rating, fr[1].WindSpeed
+	}
+
+	var fcstBuilder alexa.SSMLBuilder
+	if r < 3 {
+		fcstBuilder.Say("It looks like the best time to go fishing over the next couple of hours is, ")
+		fcstBuilder.Pause("250")
+		fcstBuilder.Say("well, ")
+		fcstBuilder.Pause("250")
+		fcstBuilder.Say(
+			fmt.Sprintf("probably some other time with a top rating well below average and a wind speed of %f.", w))
+	} else if r >= 3 && r <= 4 {
+		fcstBuilder.Say(fmt.Sprintf("It looks like a decent or possibly better time to go fishing %s with a forecast rating "+
+			"just on the plus side.", t))
+		fcstBuilder.Pause("500")
+		fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %f.", w))
+	} else {
+		fcstBuilder.Say("The fish appear to be biting!")
+		fcstBuilder.Pause("750")
+		fcstBuilder.Say(fmt.Sprintf("Over the next couple hours the fishing looks great "+
+			"with the best time to go being %s with a forecast rating well over the norm. ", t))
+		fcstBuilder.Pause("500")
+		fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %f.", w))
+	}
+
+	return alexa.NewSSMLResponse("Today's Fishing Forecast", fcstBuilder.Build())
 }
 
 func HandleHelpIntent(request alexa.Request) alexa.Response {
@@ -153,8 +153,8 @@ func Handler(request alexa.Request) (alexa.Response, error) {
 
 // Load Properties before proceeding
 func init() {
-	//cfg = new(DaFishConfig)
-	//cfg.LoadConfig()
+	cfg = new(DaFishConfig)
+	cfg.LoadConfig()
 }
 func main() {
 	lambda.Start(Handler)
