@@ -17,8 +17,8 @@ type DaFishConfig struct {
 
 // Defining as constants rather than reading from config file until resource monitoring is setup
 // AlexaApiBaseUrl  = "https://api.amazonalexa.com"  --- US Endpoint. Will grab this from the incoming Request payload.
-// %i - reserved for DeviceId
-const AlexaLocEndpoint = "/v1/devices/%i/settings/address/countryAndPostalCode"
+// %s - reserved for DeviceId
+const AlexaLocEndpoint = "/v1/devices/%s/settings/address/countryAndPostalCode"
 
 var (
 	KMS  = NewKMS()

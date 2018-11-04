@@ -59,11 +59,13 @@ func (s *GeocodeService) GetAddressGeocodePoint() (*GeocodeResponse, error) {
 	reqUrl := fmt.Sprintf("%s?countryRegion=%s&postalCode=%s&userIp=%s&key=%s", s.URL, s.CountryRegion, s.PostalCode, s.UsrIp, s.Key)
 	req, err := http.NewRequest(http.MethodGet, reqUrl, nil)
 	if err != nil {
+		log.Print("Error Creating Geo Request")
 		return nil, err
 	}
 
 	resp, err := s.Client.Do(req)
 	if err != nil {
+		log.Print("Error processing Geo Response")
 		return nil, err
 	}
 	defer resp.Body.Close()

@@ -62,13 +62,14 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 		URL:    apiEndpoint,
 		Id:     deviceId,
 		Token:  apiAccessToken,
+		Endpoint: cfg.AlexaLocEndpoint,
 		Client: http.Client{},
 	}
 
 	resp, err := DeviceLocService.GetDeviceLocation()
-	log.Print(resp)
-	log.Print(err)
 	if err != nil {
+		log.Print(resp)
+		log.Print(err)
 		// TODO - Consider adding custom prompt if possible
 		//var builder = alexa.SSMLBuilder{}
 		//builder.Say("I'm unable to get your zip code and country information.")
@@ -88,6 +89,7 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 		Client:        http.Client{},
 	}
 
+	log.Printf("Geo URL: %s", GeocodeService.URL)
 	geoPoint, err := GeocodeService.GetGeoPoint()
 	if err != nil {
 		panic("trouble getting information on the area ")
@@ -108,7 +110,7 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 	}
 	var (
 		t string
-		r uint
+		r int
 		w float64
 	)
 	if fr[0].Rating > fr[1].Rating {
@@ -120,23 +122,28 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 	var fcstBuilder alexa.SSMLBuilder
 	if r < 3 {
 		fcstBuilder.Say("It looks like the best time to go fishing over the next couple of hours is, ")
-		fcstBuilder.Pause("250")
+		fcstBuilder.Pause("150")
 		fcstBuilder.Say("well, ")
-		fcstBuilder.Pause("250")
-		fcstBuilder.Say(
-			fmt.Sprintf("probably some other time with a top rating well below average and a wind speed of %f.", w))
-	} else if r >= 3 && r <= 4 {
-		fcstBuilder.Say(fmt.Sprintf("It looks like a decent or possibly better time to go fishing %s with a forecast rating "+
-			"just on the plus side.", t))
+		fcstBuilder.Pause("150")
+		fcstBuilder.Say("probably some other time.")
 		fcstBuilder.Pause("500")
-		fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %f.", w))
+		fcstBuilder.Say( fmt.Sprintf( " The top rating is well below average and the wind speed is %.1f miles per hour.", w))
+	} else if r >= 3 && r <= 4 {
+		fcstBuilder.Say(fmt.Sprintf("It looks like a decent or possibly better time to go fishing %s.", t))
+		fcstBuilder.Say(" The forecast rating just on the plus side,")
+		fcstBuilder.Pause("250")
+		fcstBuilder.Say("So you should have at least an average time fishing.")
+		fcstBuilder.Pause("500")
+		fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %.1f miles per hour.", w))
 	} else {
 		fcstBuilder.Say("The fish appear to be biting!")
 		fcstBuilder.Pause("750")
-		fcstBuilder.Say(fmt.Sprintf("Over the next couple hours the fishing looks great "+
-			"with the best time to go being %s with a forecast rating well over the norm. ", t))
+		fcstBuilder.Say("Over the next couple hours the fishing looks great!")
 		fcstBuilder.Pause("500")
-		fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %f.", w))
+		fcstBuilder.Say(fmt.Sprintf(
+			" The best time to go appears to be %s with a forecast rating well over the norm. ", t))
+		fcstBuilder.Pause("500")
+		fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %.1f miles per hour.", w))
 	}
 
 	return alexa.NewSSMLResponse("Today's Fishing Forecast", fcstBuilder.Build())

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/BHunter2889/da-fish-alexa/alexa"
 	"net/http"
+	"log"
 )
 
 type DeviceService struct {
@@ -18,8 +19,12 @@ type DeviceService struct {
 func (s *DeviceService) GetDeviceLocation() (*alexa.DeviceLocationResponse, error) {
 	endp := fmt.Sprintf(s.Endpoint, s.Id)
 	reqUrl := fmt.Sprintf("%s%s", s.URL, endp)
+	log.Print(reqUrl)
 	req, err := http.NewRequest(http.MethodGet, reqUrl, nil)
 	if err != nil {
+		log.Print("Error creating new device location request")
+		log.Print(err)
+		log.Print(req)
 		return nil, err
 	}
 	bearer := "Bearer " + s.Token
@@ -27,6 +32,9 @@ func (s *DeviceService) GetDeviceLocation() (*alexa.DeviceLocationResponse, erro
 
 	resp, err := s.Client.Do(req)
 	if err != nil {
+		log.Print("Error processing device location response")
+		log.Print(err)
+		log.Print(resp)
 		return nil, err
 	}
 	defer resp.Body.Close()

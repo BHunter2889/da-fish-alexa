@@ -41,7 +41,7 @@ type ForecasterResponse struct {
 type Hour struct {
 	Icon              string  `json:"icon"`
 	PrecipProbability float64 `json:"precipProbability"`
-	Rating            uint    `json:"rating"`
+	Rating            int    `json:"rating"`
 	Temperature       float64 `json:"temperature"`
 	Time              int64   `json:"time"`
 	WindSpeed         float64 `json:"windSpeed"`
@@ -54,19 +54,26 @@ func (s *ForecasterService) GetCurrentFishingRating() ([]Hour, error) {
 		return []Hour{}, err
 	}
 	//For now Let's just return now and 2 hours from now.
+	log.Print(resp)
+	log.Print(resp.Hourly)
 	response := []Hour{resp.Hourly[0], resp.Hourly[2]}
 	return response, nil
 }
 
 func (s *ForecasterService) GetFullFishingForecast() (*ForecasterResponse, error) {
-	reqUrl := fmt.Sprintf("%s?lat=%flon=%f", s.URL, s.Lat, s.Lon)
+	reqUrl := fmt.Sprintf("%s?lat=%f&lon=%f", s.URL, s.Lat, s.Lon)
+	log.Printf("Fishing Forecast Request: %s", reqUrl)
 	req, err := http.NewRequest(http.MethodGet, reqUrl, nil)
 	if err != nil {
+		log.Print("Error creating Fishing Forecast Request")
+		log.Print(err)
 		return nil, err
 	}
 
 	resp, err := s.Client.Do(req)
 	if err != nil {
+		log.Print("Error processing Fishing Forecast Response")
+		log.Print(err)
 		return nil, err
 	}
 	defer resp.Body.Close()
