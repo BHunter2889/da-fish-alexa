@@ -2,25 +2,19 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/BHunter2889/da-fish-alexa"
-  packages = [
-    "alexa",
-    "services"
-  ]
-  revision = "37cae6c03dec618f4c0f05d0976b7464c6b29539"
-
-[[projects]]
+  digest = "1:8b55da6790eeade578c1fd4ebaa5b0e641072172e1d743f3cb945ae73af463f9"
   name = "github.com/aws/aws-lambda-go"
   packages = [
     "lambda",
     "lambda/messages",
-    "lambdacontext"
+    "lambdacontext",
   ]
+  pruneopts = ""
   revision = "2d482ef09017ae953b1e8d5a6ddac5b696663a3c"
   version = "v1.6.0"
 
 [[projects]]
+  digest = "1:369d0aa7c0d4f891548051d1817cf250404343487e2bff6de0e07e6cf8cb9623"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -53,19 +47,26 @@
     "private/protocol/rest",
     "private/protocol/xml/xmlutil",
     "service/kms",
-    "service/sts"
+    "service/sts",
   ]
-  revision = "870fa4307c5f57c14153c695df7b87af1acdcbf1"
-  version = "v1.15.66"
+  pruneopts = ""
+  revision = "3264db248fe8d241f6949ed35e33b11c0aec3c93"
+  version = "v1.15.68"
 
 [[projects]]
+  digest = "1:6f49eae0c1e5dab1dafafee34b207aeb7a42303105960944828c2079b92fc88e"
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
+  pruneopts = ""
   revision = "0b12d6b5"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2b176d01609dba53b574bfe2e70b1b1768710db2fbd290bf2ed962c362f3d92b"
+  input-imports = [
+    "github.com/aws/aws-lambda-go/lambda",
+    "github.com/aws/aws-sdk-go/aws/session",
+    "github.com/aws/aws-sdk-go/service/kms",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

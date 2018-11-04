@@ -55,6 +55,8 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 	apiAccessToken := request.Context.System.APIAccessToken
 	apiEndpoint := request.Context.System.APIEndpoint
 
+	log.Printf("Device ID: %s, ApiAccess: %s, Endpoint: %s", deviceId, apiAccessToken, apiEndpoint)
+
 	// Get Location registered to user device
 	DeviceLocService = services.DeviceService{
 		URL:    apiEndpoint,
@@ -64,9 +66,16 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 	}
 
 	resp, err := DeviceLocService.GetDeviceLocation()
+	log.Print(resp)
+	log.Print(err)
 	if err != nil {
-		panic("trouble getting your zip code area, please ensure you have granted permission for this so that " +
-			"Da Fish can determine the fishing forecast for your area.")
+		// TODO - Consider adding custom prompt if possible
+		//var builder = alexa.SSMLBuilder{}
+		//builder.Say("I'm unable to get your zip code and country information.")
+		//builder.Pause("500")
+		//builder.Say("Please check your Alexa App to grant permission for this so that I can determine " +
+		//	"the fishing forecast for your area.")
+		return alexa.NewPermissionsRequestResponse()
 	}
 	log.Print(resp)
 	// Get Geocode coordinates from retrieved location
@@ -144,6 +153,7 @@ func HandleHelpIntent(request alexa.Request) alexa.Response {
 }
 
 func HandleAboutIntent(request alexa.Request) alexa.Response {
+	//TODO - Clean this up wil SSML
 	return alexa.NewSimpleResponse("About", "Da Fish was created by HuntX in Saint Louis, Missouri so that he couldn't talk himself out of going fishing by using the excuse that conditions may not be optimal and figuring it out takes too much time to look up.")
 }
 

@@ -19,6 +19,21 @@ func NewSimpleResponse(title string, text string) Response {
 	return r
 }
 
+// Consider adding custom prompt if possible
+func NewPermissionsRequestResponse() Response {
+	r := Response{
+		Version: "1.0",
+		Body: ResBody{
+			Card: &Payload {
+				Type:        "AskForPermissionsConsent",
+				Permissions: []string{"read::alexa:device:all:address:country_and_postal_code"},
+			},
+
+		},
+	}
+	return r
+}
+
 type Response struct {
 	Version           string                 `json:"version"`
 	SessionAttributes map[string]interface{} `json:"sessionAttributes,omitempty"`
@@ -42,7 +57,7 @@ type Directives struct {
 	SlotToElicit  string         `json:"slotToElicit,omitempty"`
 	UpdatedIntent *UpdatedIntent `json:"UpdatedIntent,omitempty"`
 	PlayBehavior  string         `json:"playBehavior,omitempty"`
-	AudioItem     struct {
+	AudioItem struct {
 		Stream struct {
 			Token                string `json:"token,omitempty"`
 			URL                  string `json:"url,omitempty"`
@@ -69,6 +84,7 @@ type Payload struct {
 	SSML    string `json:"ssml,omitempty"`
 	Content string `json:"content,omitempty"`
 	Image   Image  `json:"image,omitempty"`
+	Permissions []string `json:"permissions,omitempty"`
 }
 
 // Response(s) from requests made back to the Alexa Api
