@@ -1,4 +1,4 @@
-# Privacy Policy for Da Fish
+# Privacy Policy for BugCaster/Da Fish
 This privacy policy describes how HuntX protects your (“you”, “the user”) privacy and your data. Before using any of our Alexa Skills, please read this policy and our Alexa Skills Terms of Use, as well as the Alexa Terms of Use and the Privacy Policies by the Amazon Digital Services LLC (with its affiliates, “Amazon”).
 
 Regarding Amazon, “Alexa” means their Alexa Voice Service which includes third party services (like our skills) and other related Software.

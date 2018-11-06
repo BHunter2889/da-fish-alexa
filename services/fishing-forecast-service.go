@@ -41,7 +41,7 @@ type ForecasterResponse struct {
 type Hour struct {
 	Icon              string  `json:"icon"`
 	PrecipProbability float64 `json:"precipProbability"`
-	Rating            int    `json:"rating"`
+	Rating            int     `json:"rating"`
 	Temperature       float64 `json:"temperature"`
 	Time              int64   `json:"time"`
 	WindSpeed         float64 `json:"windSpeed"`

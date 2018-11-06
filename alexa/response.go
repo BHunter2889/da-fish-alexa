@@ -1,5 +1,7 @@
 package alexa
 
+import "da-fish-alexa/alexa"
+
 func NewSimpleResponse(title string, text string) Response {
 	r := Response{
 		Version: "1.0",
@@ -21,14 +23,49 @@ func NewSimpleResponse(title string, text string) Response {
 
 // Consider adding custom prompt if possible
 func NewPermissionsRequestResponse() Response {
+	var builder alexa.SSMLBuilder
+	builder.Say("Bug Caster was unable to access your device's zip code and country information. ")
+	builder.Pause("750")
+	builder.Say("If you have not enabled Bug Caster to access this information, ")
+	builder.Pause("150")
+	builder.Say("Please check your Alexa App to grant permission for Bug Caster to access your zip code and country " +
+		"information so that the fishing forecast for your area may be determined. ")
 	r := Response{
 		Version: "1.0",
 		Body: ResBody{
-			Card: &Payload {
+			OutputSpeech: &Payload{
+				Type: "PlainText",
+				Text: builder.Build(),
+			},
+			Card: &Payload{
 				Type:        "AskForPermissionsConsent",
 				Permissions: []string{"read::alexa:device:all:address:country_and_postal_code"},
 			},
+		},
+	}
+	return r
+}
 
+func NewDefaultErrorResponse() Response {
+	var builder alexa.SSMLBuilder
+	builder.Say("Bug Caster is down and undergoing maintenance. ")
+	builder.Pause("750")
+	builder.Say(" Apologies for the inconvenience. ")
+	builder.Pause("500")
+	builder.Say("Please try Bug Caster again later.")
+
+	r := Response{
+		Version: "1.0",
+		Body: ResBody{
+			OutputSpeech: &Payload{
+				Type: "PlainText",
+				Text: builder.Build(),
+			},
+			Card: &Payload{
+				Type:  "Simple",
+				Title: "BugCaster Under Maintenance",
+				Text:  builder.Build(),
+			},
 		},
 	}
 	return r
@@ -57,7 +94,7 @@ type Directives struct {
 	SlotToElicit  string         `json:"slotToElicit,omitempty"`
 	UpdatedIntent *UpdatedIntent `json:"UpdatedIntent,omitempty"`
 	PlayBehavior  string         `json:"playBehavior,omitempty"`
-	AudioItem struct {
+	AudioItem     struct {
 		Stream struct {
 			Token                string `json:"token,omitempty"`
 			URL                  string `json:"url,omitempty"`
@@ -78,12 +115,12 @@ type Image struct {
 }
 
 type Payload struct {
-	Type    string `json:"type,omitempty"`
-	Title   string `json:"title,omitempty"`
-	Text    string `json:"text,omitempty"`
-	SSML    string `json:"ssml,omitempty"`
-	Content string `json:"content,omitempty"`
-	Image   Image  `json:"image,omitempty"`
+	Type        string   `json:"type,omitempty"`
+	Title       string   `json:"title,omitempty"`
+	Text        string   `json:"text,omitempty"`
+	SSML        string   `json:"ssml,omitempty"`
+	Content     string   `json:"content,omitempty"`
+	Image       Image    `json:"image,omitempty"`
 	Permissions []string `json:"permissions,omitempty"`
 }
 

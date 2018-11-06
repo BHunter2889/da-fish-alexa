@@ -9,6 +9,7 @@ vendor
 
 # Intellij Garbage
 .idea
+*.iml
 
 #Serverless Stuff that tries to creep in
 node_modules

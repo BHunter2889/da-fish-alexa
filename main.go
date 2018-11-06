@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"log"
 	"net/http"
+	"strings"
 )
 
 // TODO - add context.Context for xray tracing
@@ -39,17 +40,12 @@ func IntentDispatcher(request alexa.Request) alexa.Response {
 	return response
 }
 
-func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
-	//return alexa.NewSimpleResponse("Today's Fishing Forecast", "You caught me! Like a young fish, I'm still learning. "+
-	//	"Please be patient with me, I'll have forecasts for you soon!")
-	//defer func() alexa.Response {
-	//	var resp alexa.Response
-	//	if r := recover(); r != nil {
-	//		resp =
-	//	}
-	//
-	//	return resp
-	//}()
+func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Response) {
+	defer func() {
+		if r := recover(); r != nil {
+			response = alexa.NewDefaultErrorResponse()
+		}
+	}()
 
 	deviceId := request.Context.System.Device.DeviceID
 	apiAccessToken := request.Context.System.APIAccessToken
@@ -59,11 +55,11 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 
 	// Get Location registered to user device
 	DeviceLocService = services.DeviceService{
-		URL:    apiEndpoint,
-		Id:     deviceId,
-		Token:  apiAccessToken,
+		URL:      apiEndpoint,
+		Id:       deviceId,
+		Token:    apiAccessToken,
 		Endpoint: cfg.AlexaLocEndpoint,
-		Client: http.Client{},
+		Client:   http.Client{},
 	}
 
 	resp, err := DeviceLocService.GetDeviceLocation()
@@ -72,11 +68,11 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 		log.Print(err)
 		// TODO - Consider adding custom prompt if possible
 		//var builder = alexa.SSMLBuilder{}
-		//builder.Say("I'm unable to get your zip code and country information.")
-		//builder.Pause("500")
-		//builder.Say("Please check your Alexa App to grant permission for this so that I can determine " +
-		//	"the fishing forecast for your area.")
-		return alexa.NewPermissionsRequestResponse()
+		if strings.Contains(err.Error(), "403") {
+			return alexa.NewPermissionsRequestResponse()
+		} else {
+			panic("Unexpected Device Location Retrieval Error")
+		}
 	}
 	log.Print(resp)
 	// Get Geocode coordinates from retrieved location
@@ -127,7 +123,7 @@ func HandleTodaysFishRatingIntent(request alexa.Request) alexa.Response {
 		fcstBuilder.Pause("150")
 		fcstBuilder.Say("probably some other time.")
 		fcstBuilder.Pause("500")
-		fcstBuilder.Say( fmt.Sprintf( " The top rating is well below average and the wind speed is %.1f miles per hour.", w))
+		fcstBuilder.Say(fmt.Sprintf(" The top rating is well below average and the wind speed is %.1f miles per hour.", w))
 	} else if r >= 3 && r <= 4 {
 		fcstBuilder.Say(fmt.Sprintf("It looks like a decent or possibly better time to go fishing %s.", t))
 		fcstBuilder.Say(" The forecast rating just on the plus side,")
@@ -153,15 +149,37 @@ func HandleHelpIntent(request alexa.Request) alexa.Response {
 	var builder alexa.SSMLBuilder
 	builder.Say("Here are some of the things you can ask:")
 	builder.Pause("1000")
-	builder.Say("Give me todays fishing forecast.")
+	builder.Say("Give me today's fishing forecast.")
 	builder.Pause("1000")
 	builder.Say("When is the best time to go fishing?")
-	return alexa.NewSSMLResponse("Da Fish Forecaster Help", builder.Build())
+	return alexa.NewSSMLResponse("BugCaster Help", builder.Build())
 }
 
 func HandleAboutIntent(request alexa.Request) alexa.Response {
-	//TODO - Clean this up wil SSML
-	return alexa.NewSimpleResponse("About", "Da Fish was created by HuntX in Saint Louis, Missouri so that he couldn't talk himself out of going fishing by using the excuse that conditions may not be optimal and figuring it out takes too much time to look up.")
+	var builder alexa.SSMLBuilder
+	builder.Say("Welcome to Bug Caster!")
+	builder.Pause("1000")
+	builder.Say("Bug Caster uses solunar theory and applied analytics to determine how probable fish activity translates to quality of fishing by the hour.")
+	builder.Pause("1000")
+	builder.Say("Currently, ")
+	builder.Pause("150")
+	builder.Say("You can have Alexa ask Bug Caster for your fishing forecast, ")
+	builder.Pause("150")
+	builder.Say("or how the fishing is, ")
+	builder.Pause("150")
+	builder.Say("and get the best time to go fishing over the next couple of hours with a summarized rating and projected wind speed. ")
+	builder.Pause("1000")
+	builder.Say("New features will be coming soon, ")
+	builder.Pause("150")
+	builder.Say("including the ability to ask for a forecast for a specific time and location, ")
+	builder.Pause("150")
+	builder.Say("the best time during a specified range or normal daylight hours, ")
+	builder.Pause("150")
+	builder.Say("and potentially premium content such as a weekly forecast summary with graphic display. ")
+	builder.Pause("1000")
+	builder.Say("We hope Bug Caster improves your fishing experiences and appreciate any feedback! ")
+
+	return alexa.NewSSMLResponse("About BugCaster", builder.Build())
 }
 
 func Handler(request alexa.Request) (alexa.Response, error) {
@@ -176,49 +194,3 @@ func init() {
 func main() {
 	lambda.Start(Handler)
 }
-
-////TODO Remove
-//func HandleFrontpageDealIntent(request alexa.Request) alexa.Response {
-//	feedResponse, _ := RequestFeed("frontpage")
-//	var builder alexa.SSMLBuilder
-//	builder.Say("Here are the current frontpage deals:")
-//	builder.Pause("1000")
-//	for _, item := range feedResponse.Channel.Item {
-//		builder.Say(item.Title)
-//		builder.Pause("1000")
-//	}
-//	return alexa.NewSSMLResponse("Frontpage Deals", builder.Build())
-//}
-//
-////TODO Remove
-//func HandlePopularDealIntent(request alexa.Request) alexa.Response {
-//	return alexa.NewSimpleResponse("Popular Deals", "Popular deal data here")
-//}
-//// TODO - Delete this or rework for JSON
-//type FeedResponse struct {
-//	Channel struct {
-//		Item []struct {
-//			Title string `xml:"title"`
-//			Link  string `xml:"link"`
-//		} `xml:"item"`
-//	} `xml:"channel"`
-//}
-//
-//func RequestFeed(mode string) (FeedResponse, error) {
-//	endpoint, _ := url.Parse("https://slickdeals.net/newsearch.php")
-//	queryParams := endpoint.Query()
-//	queryParams.Set("mode", mode)
-//	queryParams.Set("searcharea", "deals")
-//	queryParams.Set("searchin", "first")
-//	queryParams.Set("rss", "1")
-//	endpoint.RawQuery = queryParams.Encode()
-//	response, err := http.Get(endpoint.String())
-//	if err != nil {
-//		return FeedResponse{}, err
-//	} else {
-//		data, _ := ioutil.ReadAll(response.Body)
-//		var feedResponse FeedResponse
-//		xml.Unmarshal(data, &feedResponse)
-//		return feedResponse, nil
-//	}
-//}
