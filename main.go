@@ -26,10 +26,6 @@ func IntentDispatcher(request alexa.Request) alexa.Response {
 	switch request.Body.Intent.Name {
 	case "TodaysFishRatingIntent":
 		response = HandleTodaysFishRatingIntent(request)
-		//case "FrontpageDealIntent":
-		//	response = HandleFrontpageDealIntent(request)
-		//case "PopularDealIntent":
-		//	response = HandlePopularDealIntent(request)
 	case alexa.HelpIntent:
 		response = HandleHelpIntent(request)
 	case "AboutIntent":
@@ -66,8 +62,7 @@ func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Respons
 	if err != nil {
 		log.Print(resp)
 		log.Print(err)
-		// TODO - Consider adding custom prompt if possible
-		//var builder = alexa.SSMLBuilder{}
+
 		if strings.Contains(err.Error(), "403") {
 			return alexa.NewPermissionsRequestResponse()
 		} else {
