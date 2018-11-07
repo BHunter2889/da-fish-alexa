@@ -13,6 +13,7 @@ import (
 // TODO - add context.Context for xray tracing
 
 var (
+
 	cfg           *DaFishConfig
 	defaultUserIp = "127.0.0.1"
 
@@ -177,6 +178,7 @@ func HandleAboutIntent(request alexa.Request) alexa.Response {
 	return alexa.NewSSMLResponse("About BugCaster", builder.Build())
 }
 
+// TODO - add contxt for Xray
 func Handler(request alexa.Request) (alexa.Response, error) {
 	return IntentDispatcher(request), nil
 }

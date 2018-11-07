@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
+	//"github.com/aws/aws-xray-sdk-go/xray"
 	"os"
 )
 
@@ -22,6 +23,7 @@ const AlexaLocEndpoint = "/v1/devices/%s/settings/address/countryAndPostalCode"
 
 var (
 	KMS  = NewKMS()
+
 	sess = session.Must(session.NewSession())
 
 	geoKeyDecrypt        = decrypt(os.Getenv("GEO_KEY"))
@@ -52,6 +54,14 @@ func NewKMS() *kms.KMS {
 	//xray.AWS(c.Client)
 	return c
 }
+
+// TODO - finish Xray impl
+//func init() {
+//	xray.Configure(xray.Config{
+//		LogLevel: "trace",
+//	})
+//}
+
 
 func (cfg *DaFishConfig) LoadConfig() {
 	cfg.AlexaLocEndpoint = AlexaLocEndpoint
