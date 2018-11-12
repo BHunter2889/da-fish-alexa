@@ -115,7 +115,7 @@ func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Respons
 	}
 
 	var fcstBuilder alexa.SSMLBuilder
-	if r < 3 {
+	if r < 2 {
 		fcstBuilder.Say("It looks like the best time to go fishing over the next couple of hours is, ")
 		fcstBuilder.Pause("150")
 		fcstBuilder.Say("well, ")
@@ -123,7 +123,7 @@ func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Respons
 		fcstBuilder.Say("probably some other time.")
 		fcstBuilder.Pause("500")
 		fcstBuilder.Say(fmt.Sprintf(" The top rating is well below average and the wind speed is %.1f miles per hour.", w))
-	} else if r >= 3 && r <= 4 {
+	} else if r >= 2 && r <= 3 {
 		fcstBuilder.Say(fmt.Sprintf("It looks like a decent or possibly better time to go fishing %s.", t))
 		fcstBuilder.Say(" The forecast rating just on the plus side,")
 		fcstBuilder.Pause("250")
