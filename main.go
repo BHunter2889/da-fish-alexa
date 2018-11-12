@@ -8,13 +8,14 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"context"
 )
 
 // TODO - add context.Context for xray tracing
 
 var (
 
-	cfg           *DaFishConfig
+	cfg           *BugCasterConfig
 	defaultUserIp = "127.0.0.1"
 
 	DeviceLocService  services.DeviceService
@@ -23,6 +24,7 @@ var (
 )
 
 func IntentDispatcher(request alexa.Request) alexa.Response {
+	log.Print("Intent Dispatcher")
 	var response alexa.Response
 	switch request.Body.Intent.Name {
 	case "TodaysFishRatingIntent":
@@ -38,6 +40,7 @@ func IntentDispatcher(request alexa.Request) alexa.Response {
 }
 
 func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Response) {
+	log.Print("Todays Fish Rating Intent")
 	defer func() {
 		if r := recover(); r != nil {
 			response = alexa.NewDefaultErrorResponse()
@@ -179,15 +182,18 @@ func HandleAboutIntent(request alexa.Request) alexa.Response {
 }
 
 // TODO - add contxt for Xray
-func Handler(request alexa.Request) (alexa.Response, error) {
+func Handler(ctx context.Context, request alexa.Request) (alexa.Response, error) {
+	log.Print("Begin Handler")
 	return IntentDispatcher(request), nil
 }
 
 // Load Properties before proceeding
-func init() {
-	cfg = new(DaFishConfig)
-	cfg.LoadConfig()
-}
+//func init() {
+//	log.Print("Begin Init")
+//	cfg = new(BugCasterConfig)
+//	cfg.LoadConfig()
+//}
 func main() {
-	lambda.Start(Handler)
+	log.Print("Begin Main")
+	lambda.Start(ContextConfigWrapper(Handler))
 }
