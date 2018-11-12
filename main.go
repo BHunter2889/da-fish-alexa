@@ -125,8 +125,8 @@ func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Respons
 		fcstBuilder.Say(fmt.Sprintf(" The top rating is well below average and the wind speed is %.1f miles per hour.", w))
 	} else if r >= 2 && r <= 3 {
 		fcstBuilder.Say(fmt.Sprintf("It looks like a decent or possibly better time to go fishing %s.", t))
-		fcstBuilder.Say(" The forecast rating just on the plus side,")
-		fcstBuilder.Pause("250")
+		fcstBuilder.Say(" The forecast rating is on the plus side,")
+		fcstBuilder.Pause("100")
 		fcstBuilder.Say("So you should have at least an average time fishing.")
 		fcstBuilder.Pause("500")
 		fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %.1f miles per hour.", w))
