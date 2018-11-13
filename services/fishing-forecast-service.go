@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"golang.org/x/net/context/ctxhttp"
+	"context"
+	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 type ForecasterService struct {
@@ -47,8 +50,8 @@ type Hour struct {
 	WindSpeed         float64 `json:"windSpeed"`
 }
 
-func (s *ForecasterService) GetCurrentFishingRating() ([]Hour, error) {
-	resp, err := s.GetFullFishingForecast()
+func (s *ForecasterService) GetCurrentFishingRating(ctx context.Context) ([]Hour, error) {
+	resp, err := s.GetFullFishingForecast(ctx)
 	if err != nil {
 		log.Printf("Failed to get Fishing Forecast: %s", err.Error())
 		return []Hour{}, err
@@ -60,17 +63,17 @@ func (s *ForecasterService) GetCurrentFishingRating() ([]Hour, error) {
 	return response, nil
 }
 
-func (s *ForecasterService) GetFullFishingForecast() (*ForecasterResponse, error) {
+func (s *ForecasterService) GetFullFishingForecast(ctx context.Context) (*ForecasterResponse, error) {
 	reqUrl := fmt.Sprintf("%s?lat=%f&lon=%f", s.URL, s.Lat, s.Lon)
-	log.Printf("Fishing Forecast Request: %s", reqUrl)
-	req, err := http.NewRequest(http.MethodGet, reqUrl, nil)
-	if err != nil {
-		log.Print("Error creating Fishing Forecast Request")
-		log.Print(err)
-		return nil, err
-	}
-
-	resp, err := s.Client.Do(req)
+	resp, err := ctxhttp.Get(ctx, xray.Client(nil), reqUrl)
+	//req, err := http.NewRequest(http.MethodGet, reqUrl, nil)
+	//if err != nil {
+	//	log.Print("Error creating Fishing Forecast Request")
+	//	log.Print(err)
+	//	return nil, err
+	//}
+	//
+	//resp, err := s.Client.Do(req)
 	if err != nil {
 		log.Print("Error processing Fishing Forecast Response")
 		log.Print(err)

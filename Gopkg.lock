@@ -14,7 +14,7 @@
   version = "v1.6.0"
 
 [[projects]]
-  digest = "1:f2d2a2cb77297e9f55137e8933253ac7c7616636b901a0a3ee96d1ef7aa75e99"
+  digest = "1:e69bc90687a4ed4fa20ac5ba79163719952bfc833fe5e38fd86435119ae3bfd2"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -52,8 +52,8 @@
     "service/xray",
   ]
   pruneopts = ""
-  revision = "cf00ea20983ce38df17ab0a0814463ab8838459f"
-  version = "v1.15.73"
+  revision = "47607acdb3657d60debbfa33f328dc9801fb3cfd"
+  version = "v1.15.74"
 
 [[projects]]
   digest = "1:6bef876d8d6d10e42fb20eee63ea4c5d349b3d5aed0f0ce83b5ec3e3431099ad"
@@ -97,6 +97,17 @@
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
 
+[[projects]]
+  branch = "master"
+  digest = "1:3b86e1cf4059ba6c2cf189f60655a16a8e32d221ed23c4137ac6b2adeaeccc52"
+  name = "golang.org/x/net"
+  packages = [
+    "context",
+    "context/ctxhttp",
+  ]
+  pruneopts = ""
+  revision = "03003ca0c849e57b6ea29a4bab8d3cb6e4d568fe"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -105,6 +116,7 @@
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/kms",
     "github.com/aws/aws-xray-sdk-go/xray",
+    "golang.org/x/net/context/ctxhttp",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

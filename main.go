@@ -23,12 +23,12 @@ var (
 	ForecasterService services.ForecasterService
 )
 
-func IntentDispatcher(request alexa.Request) alexa.Response {
+func IntentDispatcher(ctx context.Context, request alexa.Request) alexa.Response {
 	log.Print("Intent Dispatcher")
 	var response alexa.Response
 	switch request.Body.Intent.Name {
 	case "TodaysFishRatingIntent":
-		response = HandleTodaysFishRatingIntent(request)
+		response = HandleTodaysFishRatingIntent(ctx, request)
 	case alexa.HelpIntent:
 		response = HandleHelpIntent(request)
 	case "AboutIntent":
@@ -39,7 +39,7 @@ func IntentDispatcher(request alexa.Request) alexa.Response {
 	return response
 }
 
-func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Response) {
+func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (response alexa.Response) {
 	log.Print("Todays Fish Rating Intent")
 	defer func() {
 		if r := recover(); r != nil {
@@ -51,7 +51,7 @@ func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Respons
 	apiAccessToken := request.Context.System.APIAccessToken
 	apiEndpoint := request.Context.System.APIEndpoint
 
-	log.Printf("Device ID: %s, ApiAccess: %s, Endpoint: %s", deviceId, apiAccessToken, apiEndpoint)
+	//log.Printf("Device ID: %s, ApiAccess: %s, Endpoint: %s", deviceId, apiAccessToken, apiEndpoint)
 
 	// Get Location registered to user device
 	DeviceLocService = services.DeviceService{
@@ -59,10 +59,9 @@ func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Respons
 		Id:       deviceId,
 		Token:    apiAccessToken,
 		Endpoint: cfg.AlexaLocEndpoint,
-		Client:   http.Client{},
 	}
 
-	resp, err := DeviceLocService.GetDeviceLocation()
+	resp, err := DeviceLocService.GetDeviceLocation(ctx)
 	if err != nil {
 		log.Print(resp)
 		log.Print(err)
@@ -74,6 +73,10 @@ func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Respons
 		}
 	}
 	log.Print(resp)
+
+	// Wait for KMS decryption service calls to finish if they haven't before proceeding.
+	KMSDecrytiponWaiter()
+
 	// Get Geocode coordinates from retrieved location
 	GeocodeService = services.GeocodeService{
 		URL:           cfg.GeoUrl,
@@ -84,8 +87,7 @@ func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Respons
 		Client:        http.Client{},
 	}
 
-	log.Printf("Geo URL: %s", GeocodeService.URL)
-	geoPoint, err := GeocodeService.GetGeoPoint()
+	geoPoint, err := GeocodeService.GetGeoPoint(ctx)
 	if err != nil {
 		panic("trouble getting information on the area ")
 	}
@@ -99,7 +101,7 @@ func HandleTodaysFishRatingIntent(request alexa.Request) (response alexa.Respons
 		Client: http.Client{},
 	}
 
-	fr, err := ForecasterService.GetCurrentFishingRating()
+	fr, err := ForecasterService.GetCurrentFishingRating(ctx)
 	if err != nil {
 		panic("Trouble Getting Fishing Forecast ")
 	}
@@ -184,7 +186,7 @@ func HandleAboutIntent(request alexa.Request) alexa.Response {
 // TODO - add contxt for Xray
 func Handler(ctx context.Context, request alexa.Request) (alexa.Response, error) {
 	log.Print("Begin Handler")
-	return IntentDispatcher(request), nil
+	return IntentDispatcher(ctx, request), nil
 }
 
 // Load Properties before proceeding

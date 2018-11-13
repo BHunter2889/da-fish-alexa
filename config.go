@@ -29,6 +29,8 @@ var (
 	KMS *kms.KMS
 	sess = session.Must(session.NewSession())
 	wg  sync.WaitGroup
+	chanFR <- chan string
+	chanGK <- chan string
 )
 
 type AlexaRequestHandler func(context.Context, alexa.Request) (alexa.Response, error)
@@ -87,13 +89,12 @@ func NewBugCasterConfig(ctx context.Context) (wait <- chan struct{}) {
 	return ch
 }
 
-func KMSDecrytiponWaiter(chanFR <- chan string, chanGK <- chan string) {
+func KMSDecrytiponWaiter() {
 	cfg.FishRatingUrl = <- chanFR
 	cfg.GeoKey = <- chanGK
 	wg.Wait()
 }
 
-// TODO - finish Xray impl
 func init() {
 	log.Print("Init Xray in Config")
 	xray.Configure(xray.Config{
@@ -106,8 +107,7 @@ func (cfg *BugCasterConfig) LoadConfig(ctx context.Context) {
 	log.Print("Begin LoadConfig")
 	wg.Add(2)
 	cfg.AlexaLocEndpoint = AlexaLocEndpoint
-	chanFR := decrypt(ctx, os.Getenv("FISH_RATING_SERVICE_URL"))
-	chanGK := decrypt(ctx, os.Getenv("GEO_KEY"))
+	chanFR = decrypt(ctx, os.Getenv("FISH_RATING_SERVICE_URL"))
+	chanGK = decrypt(ctx, os.Getenv("GEO_KEY"))
 	cfg.GeoUrl = os.Getenv("GEO_SERVICE_URL")
-	KMSDecrytiponWaiter(chanFR, chanGK)
 }

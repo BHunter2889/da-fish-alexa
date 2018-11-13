@@ -7,6 +7,9 @@ import (
 	"github.com/BHunter2889/da-fish-alexa/alexa"
 	"log"
 	"net/http"
+	"context"
+	"github.com/aws/aws-xray-sdk-go/xray"
+	"golang.org/x/net/context/ctxhttp"
 )
 
 type DeviceService struct {
@@ -14,14 +17,13 @@ type DeviceService struct {
 	Id       string
 	Token    string
 	Endpoint string
-	Client   http.Client
 }
 
-func (s *DeviceService) GetDeviceLocation() (*alexa.DeviceLocationResponse, error) {
+func (s *DeviceService) GetDeviceLocation(ctx context.Context) (*alexa.DeviceLocationResponse, error) {
 	endp := fmt.Sprintf(s.Endpoint, s.Id)
 	reqUrl := fmt.Sprintf("%s%s", s.URL, endp)
-	log.Print(reqUrl)
 	req, err := http.NewRequest(http.MethodGet, reqUrl, nil)
+
 	if err != nil {
 		log.Print("Error creating new device location request")
 		log.Print(err)
@@ -31,7 +33,7 @@ func (s *DeviceService) GetDeviceLocation() (*alexa.DeviceLocationResponse, erro
 	bearer := "Bearer " + s.Token
 	req.Header.Add("Authorization", bearer)
 
-	resp, err := s.Client.Do(req)
+	resp, err := ctxhttp.Do(ctx, xray.Client(nil), req)
 	if err != nil || resp.StatusCode == 403 {
 		if resp.StatusCode == 403 {
 			err = errors.New(resp.Status)

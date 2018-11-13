@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"context"
+	"golang.org/x/net/context/ctxhttp"
+	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 type GeocodeService struct {
@@ -46,8 +49,8 @@ type GeoPoint struct {
 	Coordinates []float64
 }
 
-func (s *GeocodeService) GetGeoPoint() (GeoPoint, error) {
-	resp, err := s.GetAddressGeocodePoint()
+func (s *GeocodeService) GetGeoPoint(ctx context.Context) (GeoPoint, error) {
+	resp, err := s.GetAddressGeocodePoint(ctx)
 	if err != nil {
 		log.Printf("Failed to get Geocode Point: %s", err.Error())
 		return GeoPoint{}, err
@@ -55,15 +58,16 @@ func (s *GeocodeService) GetGeoPoint() (GeoPoint, error) {
 	return resp.GeoResourceSets[0].GeoResources[0].GeoPoint, err
 }
 
-func (s *GeocodeService) GetAddressGeocodePoint() (*GeocodeResponse, error) {
+func (s *GeocodeService) GetAddressGeocodePoint(ctx context.Context) (*GeocodeResponse, error) {
 	reqUrl := fmt.Sprintf("%s?countryRegion=%s&postalCode=%s&userIp=%s&key=%s", s.URL, s.CountryRegion, s.PostalCode, s.UsrIp, s.Key)
-	req, err := http.NewRequest(http.MethodGet, reqUrl, nil)
-	if err != nil {
-		log.Print("Error Creating Geo Request")
-		return nil, err
-	}
-
-	resp, err := s.Client.Do(req)
+	resp, err := ctxhttp.Get(ctx, xray.Client(nil), reqUrl)
+	//req, err := http.NewRequest(http.MethodGet, reqUrl, nil)
+	//if err != nil {
+	//	log.Print("Error Creating Geo Request")
+	//	return nil, err
+	////}
+	//
+	//resp, err := ctxhttp.Do(ctx, xray.Client(nil), req)
 	if err != nil {
 		log.Print("Error processing Geo Response")
 		return nil, err
