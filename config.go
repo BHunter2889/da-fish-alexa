@@ -90,9 +90,11 @@ func NewBugCasterConfig(ctx context.Context) (wait <- chan struct{}) {
 }
 
 func KMSDecrytiponWaiter() {
+	log.Print("Waiting on KMS Decryption...")
 	cfg.FishRatingUrl = <- chanFR
 	cfg.GeoKey = <- chanGK
 	wg.Wait()
+	log.Print("Done Waiting On KMS Decryption.")
 }
 
 func init() {
