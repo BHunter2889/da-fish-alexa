@@ -45,10 +45,12 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 }
 
 // We want this in a channel
+// Logging For Demo Purposes
 func decrypt(ctx context.Context, s string) (wait <- chan string) {
 	log.Print("New Decrypt...")
 	ch := make(chan string)
 	go func() {
+		log.Print("Go Decrypt...")
 		decodedBytes, err := base64.StdEncoding.DecodeString(s)
 		if err != nil {
 			panic(err)
@@ -56,6 +58,7 @@ func decrypt(ctx context.Context, s string) (wait <- chan string) {
 		input := &kms.DecryptInput{
 			CiphertextBlob: decodedBytes,
 		}
+		log.Print("Calling KMS Decryption Service...")
 		response, err := KMS.DecryptWithContext(ctx, input)
 		if err != nil {
 			panic(err)
@@ -64,6 +67,7 @@ func decrypt(ctx context.Context, s string) (wait <- chan string) {
 		ch <- string(response.Plaintext[:])
 		close(ch)
 		wg.Done()
+		log.Print("Finished A KMS Decyption Go Routine.")
 	}()
 	return ch
 }
