@@ -178,7 +178,7 @@ func HandleAboutIntent(request alexa.Request) alexa.Response {
 	builder.Pause("150")
 	builder.Say("and potentially premium content such as a weekly forecast summary with graphic display. ")
 	builder.Pause("1000")
-	builder.Say("We hope Bug Caster improves your fishing experiences and appreciate any feedback! ")
+	builder.Say("We hope Bug Caster improves your fishing experiences and appreciate any feedback through reviews on the skill page in the Alexa Skill Store! ")
 
 	return alexa.NewSSMLResponse("About BugCaster", builder.Build())
 }

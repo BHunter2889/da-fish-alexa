@@ -104,7 +104,7 @@ func KMSDecrytiponWaiter() {
 func init() {
 	log.Print("Init Xray in Config")
 	xray.Configure(xray.Config{
-		LogLevel: "trace",
+		LogLevel: "info",
 	})
 }
 
