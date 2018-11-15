@@ -37,7 +37,19 @@ type AlexaRequestHandler func(context.Context, alexa.Request) (alexa.Response, e
 
 // Wrap The Handler so that we can use context to do some config BEFORE proceeding with handler.
 func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
-	return func(ctx context.Context, request alexa.Request) (alexa.Response, error) {
+	return func(ctx context.Context, request alexa.Request) (response alexa.Response, err error) {
+		// If this is a Launch Request, we don't need Config at all, so kick it back out before it causes problems
+		if request.Body.Type == "LaunchRequest" {
+			return HandleLaunchRequest(request), nil
+		}
+		defer func() {
+			if r := recover(); r != nil {
+				log.Print("CONTEXT WRAPPER PANIC")
+				log.Print(err)
+				log.Print(r)
+				response = alexa.NewDefaultErrorResponse()
+			}
+		}()
 		log.Print(ctx)
 		<- NewBugCasterConfig(ctx)
 		return h(ctx, request)
@@ -72,8 +84,6 @@ func decrypt(ctx context.Context, s string) (wait <- chan string) {
 	return ch
 }
 
-// Wrap in Xray so we can detail any errors
-// TODO - Fix Xray
 func NewKMS() *kms.KMS {
 	log.Print("Init KMS Config")
 	c := kms.New(sess)

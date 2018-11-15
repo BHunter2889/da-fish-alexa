@@ -21,7 +21,6 @@ func NewSimpleResponse(title string, text string) Response {
 	return r
 }
 
-// Consider adding custom prompt if possible
 func NewPermissionsRequestResponse() Response {
 	var builder alexa.SSMLBuilder
 	builder.Say("Bug Caster was unable to access your device's zip code and country information. ")
@@ -34,8 +33,8 @@ func NewPermissionsRequestResponse() Response {
 		Version: "1.0",
 		Body: ResBody{
 			OutputSpeech: &Payload{
-				Type: "PlainText",
-				Text: builder.Build(),
+				Type: "SSML",
+				SSML: builder.Build(),
 			},
 			Card: &Payload{
 				Type:        "AskForPermissionsConsent",
@@ -46,11 +45,62 @@ func NewPermissionsRequestResponse() Response {
 	return r
 }
 
+func NewLaunchRequestGetPermissionsResponse() Response {
+	var builder alexa.SSMLBuilder
+	builder.Say("Welcome to Bug Caster!")
+	builder.Pause("1000")
+	builder.Say("Bug Caster uses solunar theory and applied analytics to determine how probable fish activity translates to quality of fishing by the hour.")
+	builder.Pause("1000")
+	builder.Say("Bug Caster will need to access your device's zip code and country information. ")
+	builder.Pause("750")
+	builder.Say("If you have not already enabled Bug Caster to access this information, ")
+	builder.Pause("150")
+	builder.Say("Please check your Alexa App to grant permission for Bug Caster to access your zip code and country " +
+		"information so that the fishing forecast for your area may be determined. ")
+	builder.Pause("750")
+	builder.Say("Currently, ")
+	builder.Pause("100")
+	builder.Say("once you have granted this permission, ")
+	builder.Pause("100")
+	builder.Say("You can have Alexa ask Bug Caster for your fishing forecast, ")
+	builder.Pause("150")
+	builder.Say("or how the fishing is, ")
+	builder.Pause("150")
+	builder.Say("and get the best time to go fishing over the next couple of hours with a summarized rating and projected wind speed. ")
+	builder.Pause("1000")
+	builder.Say("New features will be coming soon, ")
+	builder.Pause("150")
+	builder.Say("including the ability to ask for a forecast for a specific time and location, ")
+	builder.Pause("150")
+	builder.Say("the best time during a specified range or normal daylight hours, ")
+	builder.Pause("150")
+	builder.Say("and potentially premium content such as a weekly forecast summary with graphic display. ")
+	builder.Pause("1000")
+	builder.Say("We hope Bug Caster improves your fishing experiences and appreciate any feedback through reviews on the skill page in the Alexa Skill Store! ")
+	r := Response{
+		Version: "1.0",
+		Body: ResBody{
+			OutputSpeech: &Payload{
+				Type: "SSML",
+				SSML: builder.Build(),
+			},
+			Card: &Payload{
+				Type:        "AskForPermissionsConsent",
+				Permissions: []string{"read::alexa:device:all:address:country_and_postal_code"},
+			},
+			ShouldEndSession: true,
+		},
+	}
+	return r
+}
+
 func NewDefaultErrorResponse() Response {
 	var builder alexa.SSMLBuilder
-	builder.Say("Bug Caster is down and undergoing maintenance. ")
+	builder.Say("Bug Caster caught a snag downstream while processing your request. ")
 	builder.Pause("750")
-	builder.Say(" Apologies for the inconvenience. ")
+	builder.Say("I can't blame the wind, ")
+	builder.Pause("100")
+	builder.Say("So please accept my apologies for the inconvenience. ")
 	builder.Pause("500")
 	builder.Say("Please try Bug Caster again later.")
 
@@ -58,14 +108,15 @@ func NewDefaultErrorResponse() Response {
 		Version: "1.0",
 		Body: ResBody{
 			OutputSpeech: &Payload{
-				Type: "PlainText",
-				Text: builder.Build(),
+				Type: "SSML",
+				SSML: builder.Build(),
 			},
 			Card: &Payload{
 				Type:  "Simple",
 				Title: "BugCaster Under Maintenance",
 				Text:  builder.Build(),
 			},
+			ShouldEndSession: true,
 		},
 	}
 	return r

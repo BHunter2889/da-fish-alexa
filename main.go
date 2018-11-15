@@ -11,10 +11,7 @@ import (
 	"context"
 )
 
-// TODO - add context.Context for xray tracing
-
 var (
-
 	cfg           *BugCasterConfig
 	defaultUserIp = "127.0.0.1"
 
@@ -28,13 +25,17 @@ func IntentDispatcher(ctx context.Context, request alexa.Request) alexa.Response
 	var response alexa.Response
 	switch request.Body.Intent.Name {
 	case "TodaysFishRatingIntent":
+		log.Print("INTENT_DISPATCH: TodaysFishRatingIntent")
 		response = HandleTodaysFishRatingIntent(ctx, request)
 	case alexa.HelpIntent:
-		response = HandleHelpIntent(request)
+		log.Print("INTENT_DISPATCH: HelpIntent")
+		response = HandleHelpIntent(ctx, request)
 	case "AboutIntent":
-		response = HandleAboutIntent(request)
+		log.Print("INTENT_DISPATCH: AboutIntent")
+		response = HandleAboutIntent(ctx, request)
 	default:
-		response = HandleAboutIntent(request)
+		log.Print("INTENT_DISPATCH: Default Response")
+		response = HandleAboutIntent(ctx, request)
 	}
 	return response
 }
@@ -146,17 +147,23 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 	return alexa.NewSSMLResponse("Today's Fishing Forecast", fcstBuilder.Build())
 }
 
-func HandleHelpIntent(request alexa.Request) alexa.Response {
+func HandleLaunchRequest(request alexa.Request) alexa.Response {
+	return alexa.NewLaunchRequestGetPermissionsResponse()
+}
+
+func HandleHelpIntent(ctx context.Context, request alexa.Request) alexa.Response {
 	var builder alexa.SSMLBuilder
 	builder.Say("Here are some of the things you can ask:")
 	builder.Pause("1000")
 	builder.Say("Give me today's fishing forecast.")
 	builder.Pause("1000")
 	builder.Say("When is the best time to go fishing?")
+	builder.Pause("1000")
+	builder.Say("Get my fishing forecast please.")
 	return alexa.NewSSMLResponse("BugCaster Help", builder.Build())
 }
 
-func HandleAboutIntent(request alexa.Request) alexa.Response {
+func HandleAboutIntent(ctx context.Context, request alexa.Request) alexa.Response {
 	var builder alexa.SSMLBuilder
 	builder.Say("Welcome to Bug Caster!")
 	builder.Pause("1000")
@@ -183,18 +190,17 @@ func HandleAboutIntent(request alexa.Request) alexa.Response {
 	return alexa.NewSSMLResponse("About BugCaster", builder.Build())
 }
 
-// TODO - add contxt for Xray
-func Handler(ctx context.Context, request alexa.Request) (alexa.Response, error) {
+func Handler(ctx context.Context, request alexa.Request) (response alexa.Response, error error) {
 	log.Print("Begin Handler")
+	defer func() {
+		if r := recover(); r != nil {
+			response = alexa.NewDefaultErrorResponse()
+		}
+	}()
+
 	return IntentDispatcher(ctx, request), nil
 }
 
-// Load Properties before proceeding
-//func init() {
-//	log.Print("Begin Init")
-//	cfg = new(BugCasterConfig)
-//	cfg.LoadConfig()
-//}
 func main() {
 	log.Print("Begin Main")
 	lambda.Start(ContextConfigWrapper(Handler))

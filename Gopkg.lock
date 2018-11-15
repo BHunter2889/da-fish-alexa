@@ -14,7 +14,7 @@
   version = "v1.6.0"
 
 [[projects]]
-  digest = "1:e69bc90687a4ed4fa20ac5ba79163719952bfc833fe5e38fd86435119ae3bfd2"
+  digest = "1:410d2279f7f0b2a231b33ccb689972f93420a90c38acf73c68b7c6ae0a1f409d"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -52,8 +52,8 @@
     "service/xray",
   ]
   pruneopts = ""
-  revision = "47607acdb3657d60debbfa33f328dc9801fb3cfd"
-  version = "v1.15.74"
+  revision = "5021928b560f2919fa37e159720a45ea13b18d8f"
+  version = "v1.15.76"
 
 [[projects]]
   digest = "1:6bef876d8d6d10e42fb20eee63ea4c5d349b3d5aed0f0ce83b5ec3e3431099ad"
@@ -99,14 +99,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3b86e1cf4059ba6c2cf189f60655a16a8e32d221ed23c4137ac6b2adeaeccc52"
+  digest = "1:4ac199b027ed34460ec4e0a92c882156f561e78cd046fef095e50f867462435a"
   name = "golang.org/x/net"
-  packages = [
-    "context",
-    "context/ctxhttp",
-  ]
+  packages = ["context/ctxhttp"]
   pruneopts = ""
-  revision = "03003ca0c849e57b6ea29a4bab8d3cb6e4d568fe"
+  revision = "adae6a3d119ae4890b46832a2e88a95adc62b8e7"
 
 [solve-meta]
   analyzer-name = "dep"
