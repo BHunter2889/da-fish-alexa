@@ -101,19 +101,32 @@
   branch = "master"
   digest = "1:4ac199b027ed34460ec4e0a92c882156f561e78cd046fef095e50f867462435a"
   name = "golang.org/x/net"
-  packages = ["context/ctxhttp"]
+  packages = [
+    "context",
+    "context/ctxhttp",
+  ]
   pruneopts = ""
   revision = "adae6a3d119ae4890b46832a2e88a95adc62b8e7"
+
+[[projects]]
+  branch = "v2"
+  digest = "1:61a650a53e5e865a91ae9581f02990a4b6e3afcb8d280f19b1e67a3c284944e6"
+  name = "gopkg.in/tomb.v2"
+  packages = ["."]
+  pruneopts = ""
+  revision = "d5d1b5820637886def9eef33e03a27a9f166942c"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "github.com/aws/aws-lambda-go/lambda",
+    "github.com/aws/aws-sdk-go/aws/request",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/kms",
     "github.com/aws/aws-xray-sdk-go/xray",
     "golang.org/x/net/context/ctxhttp",
+    "gopkg.in/tomb.v2",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

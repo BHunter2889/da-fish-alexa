@@ -1,6 +1,9 @@
 package alexa
 
-import "da-fish-alexa/alexa"
+import (
+	"da-fish-alexa/alexa"
+	"log"
+)
 
 func NewSimpleResponse(title string, text string) Response {
 	r := Response{
@@ -40,8 +43,41 @@ func NewPermissionsRequestResponse() Response {
 				Type:        "AskForPermissionsConsent",
 				Permissions: []string{"read::alexa:device:all:address:country_and_postal_code"},
 			},
+			ShouldEndSession: true,
 		},
 	}
+	log.Print(r)
+	return r
+}
+
+func NewUnsupportedLocationResponse() Response {
+	var builder alexa.SSMLBuilder
+	builder.Say("Bug Caster does not currently support device locales listed outside the United States or Canada. ")
+	builder.Pause("750")
+	builder.Say("If you would like us to provide support for your locale, ")
+	builder.Pause("150")
+	builder.Say("Please leave feedback on the Bug Caster skill page in the Alexa App Skill Store with your country or locale information. ")
+	builder.Pause("750")
+	builder.Say("If you are presently in a supported locale, you may need to alter your device's settings in the Alexa App.")
+	builder.Pause("500")
+	builder.Say("Bug Caster apologizes for the inconvenience.")
+
+	r := Response{
+		Version: "1.0",
+		Body: ResBody{
+			OutputSpeech: &Payload{
+				Type: "SSML",
+				SSML: builder.Build(),
+			},
+			Card: &Payload{
+				Type:        "Simple",
+				Title:       "Unsupported Locale",
+				Text:        "Supported Device Locales: United States & Canada",
+			},
+			ShouldEndSession: true,
+		},
+	}
+	log.Print(r)
 	return r
 }
 
@@ -91,6 +127,7 @@ func NewLaunchRequestGetPermissionsResponse() Response {
 			ShouldEndSession: true,
 		},
 	}
+	log.Print(r)
 	return r
 }
 

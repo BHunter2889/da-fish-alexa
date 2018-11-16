@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/BHunter2889/da-fish-alexa/alexa"
 	"github.com/BHunter2889/da-fish-alexa/services"
@@ -8,17 +9,84 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"context"
+	"gopkg.in/tomb.v2"
 )
 
 var (
 	cfg           *BugCasterConfig
 	defaultUserIp = "127.0.0.1"
 
-	DeviceLocService  services.DeviceService
+	deviceLocService  services.DeviceService
 	GeocodeService    services.GeocodeService
 	ForecasterService services.ForecasterService
+
+	tombLoc *DeviceLocator
 )
+
+func killAllTombs() (err error) {
+	if tombFR != nil {
+		err = tombFR.Stop()
+	}
+	if tombGK != nil {
+		err = tombGK.Stop()
+	}
+	if tombLoc != nil {
+		err = tombLoc.Stop()
+	}
+	return nil
+}
+
+type DeviceLocator struct {
+	ctx              context.Context
+	DeviceLocService *services.DeviceService
+	Ch               chan *alexa.DeviceLocationResponse
+	ErCh             chan error
+	t                tomb.Tomb
+}
+
+func NewDeviceLocator(ctx context.Context, ds *services.DeviceService) *DeviceLocator {
+	dl := &DeviceLocator{
+		ctx:              ctx,
+		DeviceLocService: ds,
+		Ch:               make(chan *alexa.DeviceLocationResponse),
+		ErCh:             make(chan error),
+	}
+	dl.t.Go(dl.getDeviceLocation)
+	return dl
+}
+
+func (dl *DeviceLocator) Stop() error {
+	dl.t.Kill(nil)
+	return dl.t.Wait()
+}
+
+func (dl *DeviceLocator) getDeviceLocation() error {
+	resp, err := deviceLocService.GetDeviceLocation(dl.ctx)
+	if err != nil {
+		log.Print(resp)
+		log.Print(err)
+		if strings.Contains(err.Error(), "403") {
+			dl.ErCh <- err
+			close(dl.Ch)
+			close(dl.ErCh)
+			return nil
+		}
+		close(dl.Ch)
+		close(dl.ErCh)
+		return err
+	}
+
+	select {
+	case dl.Ch <- resp:
+		close(dl.ErCh)
+		return nil
+	case <-dl.t.Dying():
+		log.Print("DeviceLocator Dying...")
+		close(dl.Ch)
+		close(dl.ErCh)
+		return nil
+	}
+}
 
 func IntentDispatcher(ctx context.Context, request alexa.Request) alexa.Response {
 	log.Print("Intent Dispatcher")
@@ -35,6 +103,7 @@ func IntentDispatcher(ctx context.Context, request alexa.Request) alexa.Response
 		response = HandleAboutIntent(ctx, request)
 	default:
 		log.Print("INTENT_DISPATCH: Default Response")
+		killAllTombs()
 		response = HandleAboutIntent(ctx, request)
 	}
 	return response
@@ -44,6 +113,8 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 	log.Print("Todays Fish Rating Intent")
 	defer func() {
 		if r := recover(); r != nil {
+			log.Print("Benzos delivered in TodaysFishRatingIntent handler.")
+			log.Print(r)
 			response = alexa.NewDefaultErrorResponse()
 		}
 	}()
@@ -55,25 +126,34 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 	//log.Printf("Device ID: %s, ApiAccess: %s, Endpoint: %s", deviceId, apiAccessToken, apiEndpoint)
 
 	// Get Location registered to user device
-	DeviceLocService = services.DeviceService{
+	deviceLocService = services.DeviceService{
 		URL:      apiEndpoint,
 		Id:       deviceId,
 		Token:    apiAccessToken,
 		Endpoint: cfg.AlexaLocEndpoint,
 	}
 
-	resp, err := DeviceLocService.GetDeviceLocation(ctx)
-	if err != nil {
-		log.Print(resp)
-		log.Print(err)
-
-		if strings.Contains(err.Error(), "403") {
-			return alexa.NewPermissionsRequestResponse()
-		} else {
-			panic("Unexpected Device Location Retrieval Error")
+	tombLoc := NewDeviceLocator(ctx, &deviceLocService)
+	var err error
+	var resp *alexa.DeviceLocationResponse
+	select {
+	case err = <-tombLoc.ErCh:
+		if err != nil {
+			if strings.Contains(err.Error(), "403") {
+				log.Print("REQUESTING LOCATION PERMISSIONS")
+				tombFR.Stop()
+				tombGK.Stop()
+				return alexa.NewPermissionsRequestResponse()
+			} else {
+				log.Print("Unexpected Device Location Retrieval Error")
+				tombFR.Stop()
+				tombGK.Stop()
+				panic("Unexpected Device Location Retrieval Error")
+			}
 		}
+	case resp = <-tombLoc.Ch:
+		log.Print(resp)
 	}
-	log.Print(resp)
 
 	// Wait for KMS decryption service calls to finish if they haven't before proceeding.
 	KMSDecrytiponWaiter()
@@ -87,9 +167,14 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 		Key:           cfg.GeoKey,
 		Client:        http.Client{},
 	}
+	log.Print(cfg.GeoKey)
+	log.Print(cfg.FishRatingUrl)
+	log.Print("Geocoding Location... ")
 
 	geoPoint, err := GeocodeService.GetGeoPoint(ctx)
 	if err != nil {
+		log.Print("trouble getting information on the area ")
+		log.Print(err)
 		panic("trouble getting information on the area ")
 	}
 	log.Printf("Geo: {lat: %f, lon: %f}", geoPoint.Coordinates[0], geoPoint.Coordinates[1])
@@ -101,9 +186,11 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 		Lon:    geoPoint.Coordinates[1],
 		Client: http.Client{},
 	}
-
+	log.Print("Getting Forecast... ")
 	fr, err := ForecasterService.GetCurrentFishingRating(ctx)
 	if err != nil {
+		log.Print(err)
+		log.Print("Trouble Getting Fishing Forecast ")
 		panic("Trouble Getting Fishing Forecast ")
 	}
 	var (
@@ -194,6 +281,8 @@ func Handler(ctx context.Context, request alexa.Request) (response alexa.Respons
 	log.Print("Begin Handler")
 	defer func() {
 		if r := recover(); r != nil {
+			log.Print("Benzos delivered in Root Handler.")
+			log.Print(r)
 			response = alexa.NewDefaultErrorResponse()
 		}
 	}()
