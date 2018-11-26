@@ -87,21 +87,20 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 // We want this in a channel
 // Logging For Demo Purposes
 func (kdt *KMSDecryptTomb) decrypt() error {
+	defer wg.Done()
+
 	log.Print("New Decrypt...")
-	//go func() {
-	log.Print("Go Decrypt...")
 	decodedBytes, err := base64.StdEncoding.DecodeString(kdt.s)
 	if err != nil {
 		log.Print(err)
+
+		// Conditional Exists here solely for Demoing Context Cancellation.
 		if err.Error() == request.CanceledErrorCode {
 			close(kdt.Ch)
-			// TODO - May need to remove this
-			wg.Done()
 			log.Print("Context closed while in Decrypt, closed channel.")
 			return err
 		} else {
 			close(kdt.Ch)
-			wg.Done()
 			return err
 		}
 	}
@@ -110,33 +109,28 @@ func (kdt *KMSDecryptTomb) decrypt() error {
 	}
 	log.Print("Calling KMS Decryption Service...")
 	response, err := KMS.DecryptWithContext(kdt.ctx, input)
+
+	// Conditional Exists here solely for Demoing Context Cancellation.
 	if err != nil && err.Error() == request.CanceledErrorCode {
 		close(kdt.Ch)
-		// TODO - May need to remove this
-		wg.Done()
 		log.Print("Context closed while in Decrypt, closed channel.")
 		return err
 	} else if err != nil {
 		close(kdt.Ch)
-		// TODO Same here
-		wg.Done()
 		return err
 	}
-	// Plaintext is a byte array, so convert to string
-	//kdt.Ch <- string(response.Plaintext[:])
-	//close(ch)
 	log.Print("Finished A KMS Decyption Go Routine.")
-	//}()
+
+	// Listen for either successful decryption or a Context Cancellation related event.
+	// Plaintext is a byte array, so convert to string
 	select {
 	case kdt.Ch <- string(response.Plaintext[:]) :
 		log.Print("KMS Response Channel select")
 		log.Print(string(response.Plaintext[:]))
-		wg.Done()
 		return nil
 	case <-kdt.t.Dying():
 		log.Print("KMS Tomb Dying... ")
 		close(kdt.Ch)
-		wg.Done()
 		return nil
 	}
 }
@@ -182,9 +176,10 @@ func KMSDecrytiponWaiter() {
 
 func init() {
 	log.Print("Init Xray in Config")
-	xray.Configure(xray.Config{
+	err := xray.Configure(xray.Config{
 		LogLevel: "info",
 	})
+	log.Print(err)
 }
 
 func (cfg *BugCasterConfig) LoadConfig(ctx context.Context) {

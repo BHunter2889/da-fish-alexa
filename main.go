@@ -33,7 +33,7 @@ func killAllTombs() (err error) {
 	if tombLoc != nil {
 		err = tombLoc.Stop()
 	}
-	return nil
+	return
 }
 
 type DeviceLocator struct {
@@ -103,7 +103,9 @@ func IntentDispatcher(ctx context.Context, request alexa.Request) alexa.Response
 		response = HandleAboutIntent(ctx, request)
 	default:
 		log.Print("INTENT_DISPATCH: Default Response")
-		killAllTombs()
+		// Kill Running processes, print the error, move on to returning the default response.
+		err := killAllTombs()
+		log.Print(err)
 		response = HandleAboutIntent(ctx, request)
 	}
 	return response
@@ -111,6 +113,8 @@ func IntentDispatcher(ctx context.Context, request alexa.Request) alexa.Response
 
 func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (response alexa.Response) {
 	log.Print("Todays Fish Rating Intent")
+
+	// Handle Any Panics with a Default Error Response
 	defer func() {
 		if r := recover(); r != nil {
 			log.Print("Benzos delivered in TodaysFishRatingIntent handler.")
@@ -123,8 +127,6 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 	apiAccessToken := request.Context.System.APIAccessToken
 	apiEndpoint := request.Context.System.APIEndpoint
 
-	//log.Printf("Device ID: %s, ApiAccess: %s, Endpoint: %s", deviceId, apiAccessToken, apiEndpoint)
-
 	// Get Location registered to user device
 	deviceLocService = services.DeviceService{
 		URL:      apiEndpoint,
@@ -136,18 +138,26 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 	tombLoc := NewDeviceLocator(ctx, &deviceLocService)
 	var err error
 	var resp *alexa.DeviceLocationResponse
+
+	// Listen to select either a Successful Response, or Error, whichever comes first.
 	select {
 	case err = <-tombLoc.ErCh:
 		if err != nil {
+
+			// Expected case when Location Permissions have not yet been enabled.
 			if strings.Contains(err.Error(), "403") {
 				log.Print("REQUESTING LOCATION PERMISSIONS")
-				tombFR.Stop()
-				tombGK.Stop()
+
+				// Kill any processes still running, Log the Error, return new Permissions Request Response
+				err := killAllTombs()
+				log.Print(err)
 				return alexa.NewPermissionsRequestResponse()
-			} else {
+			} else { // Trouble Communicating with Alexa Devices Api
 				log.Print("Unexpected Device Location Retrieval Error")
-				tombFR.Stop()
-				tombGK.Stop()
+
+				// Kill Processes, return fallback response.
+				err := killAllTombs()
+				log.Print(err)
 				panic("Unexpected Device Location Retrieval Error")
 			}
 		}
@@ -204,6 +214,7 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 		t, r, w = "two hours from now", fr[1].Rating, fr[1].WindSpeed
 	}
 
+	// TODO Consider moving these response builds to a separate file.
 	var fcstBuilder alexa.SSMLBuilder
 	if r < 2 {
 		fcstBuilder.Say("It looks like the best time to go fishing over the next couple of hours is, ")
