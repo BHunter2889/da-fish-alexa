@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:8b55da6790eeade578c1fd4ebaa5b0e641072172e1d743f3cb945ae73af463f9"
+  digest = "1:305fae4a0e5d55390c5d91b37da205e48f3bf2390f2ac3e7cec171de6d32b31a"
   name = "github.com/aws/aws-lambda-go"
   packages = [
     "lambda",
@@ -10,11 +10,11 @@
     "lambdacontext",
   ]
   pruneopts = ""
-  revision = "2d482ef09017ae953b1e8d5a6ddac5b696663a3c"
-  version = "v1.6.0"
+  revision = "fb8f88d824489a878aee1e0badde7d8e129f8767"
+  version = "v1.7.0"
 
 [[projects]]
-  digest = "1:410d2279f7f0b2a231b33ccb689972f93420a90c38acf73c68b7c6ae0a1f409d"
+  digest = "1:342b0155b511a817c8b6fc6cbc0e59445f307755c06100a107feac13141abec7"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -52,8 +52,8 @@
     "service/xray",
   ]
   pruneopts = ""
-  revision = "5021928b560f2919fa37e159720a45ea13b18d8f"
-  version = "v1.15.76"
+  revision = "08df30d135d32f1eb21bb7754eb042aeca521a4b"
+  version = "v1.15.84"
 
 [[projects]]
   digest = "1:6bef876d8d6d10e42fb20eee63ea4c5d349b3d5aed0f0ce83b5ec3e3431099ad"

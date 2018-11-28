@@ -1,4 +1,5 @@
 build:
+	gofmt -s -w ./
 	dep ensure -v
 	dep ensure -update -v github.com/aws/aws-xray-sdk-go
 	go get

@@ -2,16 +2,14 @@ package main
 
 import (
 	"context"
-	"encoding/base64"
 	"github.com/BHunter2889/da-fish-alexa/alexa"
-	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-xray-sdk-go/xray"
+	"gopkg.in/tomb.v2"
 	"log"
 	"os"
 	"sync"
-	"gopkg.in/tomb.v2"
 )
 
 type BugCasterConfig struct {
@@ -23,20 +21,14 @@ type BugCasterConfig struct {
 	t                tomb.Tomb
 }
 
-type KMSDecryptTomb struct {
-	ctx context.Context
-	s   string
-	Ch  chan string
-	t   tomb.Tomb
-}
-
-// Defining as constants rather than reading from config file until resource monitoring is setup
-// AlexaApiBaseUrl  = "https://api.amazonalexa.com"  --- US Endpoint. Will grab this from the incoming Request payload.
+// Defining as constants rather than reading from config file - maybe text w/ X-ray to see how much longer reading from
+// a config file or otherwise might take.
+// AlexaApiBaseUrl  = "https://api.amazonalexa.com"  --- US Endpoint. Will populate this dynamically from the incoming Request payload.
 // %s - reserved for DeviceId
 const AlexaLocEndpoint = "/v1/devices/%s/settings/address/countryAndPostalCode"
 
 var (
-	KMS    *kms.KMS
+	kMS    *kms.KMS
 	sess   = session.Must(session.NewSession())
 	wg     sync.WaitGroup
 	chanFR <-chan string
@@ -60,9 +52,10 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 
 		// If this is a Launch Request, we don't need Config at all, so kick it back out before it causes problems
 		if request.Body.Type == "LaunchRequest" {
-			return HandleLaunchRequest(request), nil
+			return HandleLaunchRequest(ctx, request), nil
 		}
 
+		// Benzos PRN - Take once at bedtime as needed. (Defer a panic resolution which returns a default error voice response to the user.)
 		defer func() {
 			if r := recover(); r != nil {
 				log.Print("CONTEXT WRAPPER PANIC")
@@ -71,7 +64,11 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 				response = alexa.NewDefaultErrorResponse()
 			}
 		}()
+
+		// Logging Context for Demo Purposes
 		log.Print(ctx)
+		addAndHandleXRayRecordingError(ctx, xray.AddMetadata(ctx, "lambda-context", ctx))
+
 		NewBugCasterConfig(ctx)
 
 		response, err = h(ctx, request)
@@ -84,94 +81,34 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 	}
 }
 
-// We want this in a channel
-// Logging For Demo Purposes
-func (kdt *KMSDecryptTomb) decrypt() error {
-	defer wg.Done()
-
-	log.Print("New Decrypt...")
-	decodedBytes, err := base64.StdEncoding.DecodeString(kdt.s)
-	if err != nil {
-		log.Print(err)
-
-		// Conditional Exists here solely for Demoing Context Cancellation.
-		if err.Error() == request.CanceledErrorCode {
-			close(kdt.Ch)
-			log.Print("Context closed while in Decrypt, closed channel.")
-			return err
-		} else {
-			close(kdt.Ch)
-			return err
-		}
-	}
-	input := &kms.DecryptInput{
-		CiphertextBlob: decodedBytes,
-	}
-	log.Print("Calling KMS Decryption Service...")
-	response, err := KMS.DecryptWithContext(kdt.ctx, input)
-
-	// Conditional Exists here solely for Demoing Context Cancellation.
-	if err != nil && err.Error() == request.CanceledErrorCode {
-		close(kdt.Ch)
-		log.Print("Context closed while in Decrypt, closed channel.")
-		return err
-	} else if err != nil {
-		close(kdt.Ch)
-		return err
-	}
-	log.Print("Finished A KMS Decyption Go Routine.")
-
-	// Listen for either successful decryption or a Context Cancellation related event.
-	// Plaintext is a byte array, so convert to string
-	select {
-	case kdt.Ch <- string(response.Plaintext[:]) :
-		log.Print("KMS Response Channel select")
-		log.Print(string(response.Plaintext[:]))
-		return nil
-	case <-kdt.t.Dying():
-		log.Print("KMS Tomb Dying... ")
-		close(kdt.Ch)
-		return nil
-	}
-}
-
-func (kdt *KMSDecryptTomb) Stop() error {
-	kdt.t.Kill(nil)
-	return kdt.t.Wait()
-}
-
 func NewKMS() *kms.KMS {
-	log.Print("Init KMS Config")
+	log.Print("Init kMS Config")
 	c := kms.New(sess)
 	xray.AWS(c.Client)
 	return c
 }
 
 func NewBugCasterConfig(ctx context.Context) {
-	log.Print("NewBugCasterConfig")
-	KMS = NewKMS()
-	cfg = new(BugCasterConfig)
-	cfg.LoadConfig(ctx)
+	// Record Config Performance Impact and Profile Errors.
+	err := xray.Capture(ctx, "config.New", func(ctx1 context.Context) error {
+		log.Print("NewBugCasterConfig")
+		kMS = NewKMS()
+		cfg = new(BugCasterConfig)
+		cfg.LoadConfig(ctx)
+		return nil
+	})
+
+	addAndHandleXRayRecordingError(ctx, err)
 }
 
-func NewKMSDecryptTomb(ctx context.Context, s string) *KMSDecryptTomb {
-	kdt := &KMSDecryptTomb{
-		ctx: ctx,
-		s:   s,
-		Ch:  make(chan string),
-	}
-	kdt.t.Go(kdt.decrypt)
-	return kdt
-}
-
-func KMSDecrytiponWaiter() {
-	log.Print("Waiting on KMS Decryption...")
+func KMSDecryptionWaiter() {
+	log.Print("Waiting on kMS Decryption...")
 	cfg.FishRatingUrl = <-tombFR.Ch
 	log.Printf("FRU: %s", cfg.FishRatingUrl)
 	cfg.GeoKey = <-tombGK.Ch
 	log.Printf("GK: %s", cfg.GeoKey)
 	wg.Wait()
-	log.Print("Done Waiting On KMS Decryption.")
+	log.Print("Done Waiting On kMS Decryption.")
 }
 
 func init() {
@@ -186,7 +123,21 @@ func (cfg *BugCasterConfig) LoadConfig(ctx context.Context) {
 	log.Print("Begin LoadConfig")
 	wg.Add(2)
 	cfg.AlexaLocEndpoint = AlexaLocEndpoint
-	tombFR = NewKMSDecryptTomb(ctx, os.Getenv("FISH_RATING_SERVICE_URL"))
-	tombGK = NewKMSDecryptTomb(ctx, os.Getenv("GEO_KEY"))
+
+	// Start a new KMSDecryption X-Ray Subsegment to evaluate performance
+	addAndHandleXRayRecordingError(ctx, xray.Capture(ctx, "KMSDecryption", func(ctx1 context.Context) error {
+		tombFR = NewKMSDecryptTomb(ctx, "FISH_RATING_SERVICE_URL")
+		tombGK = NewKMSDecryptTomb(ctx, "GEO_KEY")
+		return nil
+	}))
 	cfg.GeoUrl = os.Getenv("GEO_SERVICE_URL")
+}
+
+func addAndHandleXRayRecordingError(ctx context.Context, err error) {
+	if err != nil {
+		log.Print(err)
+		if err1 := xray.AddError(ctx, err); err1 != nil {
+			log.Print(err1)
+		}
+	}
 }

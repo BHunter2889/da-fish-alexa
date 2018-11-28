@@ -70,9 +70,9 @@ func NewUnsupportedLocationResponse() Response {
 				SSML: builder.Build(),
 			},
 			Card: &Payload{
-				Type:        "Simple",
-				Title:       "Unsupported Locale",
-				Text:        "Supported Device Locales: United States & Canada",
+				Type:  "Simple",
+				Title: "Unsupported Locale",
+				Text:  "Supported Device Locales: United States & Canada",
 			},
 			ShouldEndSession: true,
 		},
