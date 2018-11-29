@@ -107,7 +107,9 @@ func KMSDecryptionWaiter() {
 	log.Printf("FRU: %s", cfg.FishRatingUrl)
 	cfg.GeoKey = <-tombGK.Ch
 	log.Printf("GK: %s", cfg.GeoKey)
-	wg.Wait()
+	if tombFR.t.Alive() && tombGK.t.Alive() && tombLoc.t.Alive() {
+		wg.Wait()
+	}
 	log.Print("Done Waiting On kMS Decryption.")
 }
 

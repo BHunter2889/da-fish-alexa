@@ -146,11 +146,13 @@ func (kdt *KMSDecryptTomb) decrypt() (ctxErr error) {
 			close(kdt.Ch)
 			log.Print("Context closed while in Decrypt, closed channel.")
 			addAndHandleXRayRecordingError(ctx1, err)
+			wg.Done()
 			ctxErr = err
 			return err
 		} else if err != nil {
 			close(kdt.Ch)
 			addAndHandleXRayRecordingError(ctx1, err)
+			wg.Done()
 			ctxErr = err
 			return err
 		}
@@ -168,6 +170,7 @@ func (kdt *KMSDecryptTomb) decrypt() (ctxErr error) {
 			log.Print("kMS Tomb Dying... ")
 			close(kdt.Ch)
 			addAndHandleXRayRecordingError(ctx1, xray.AddMetadata(ctx1, segName, "KMS Tomb is Dying"))
+			wg.Done()
 			return nil
 		}
 	})
