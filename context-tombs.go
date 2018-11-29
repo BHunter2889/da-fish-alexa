@@ -144,14 +144,12 @@ func (kdt *KMSDecryptTomb) decrypt() (ctxErr error) {
 		// Conditional Exists here solely for Demoing Context Cancellation.
 		if err != nil && err.Error() == request.CanceledErrorCode {
 			close(kdt.Ch)
-			wg.Done()
 			log.Print("Context closed while in Decrypt, closed channel.")
 			addAndHandleXRayRecordingError(ctx1, err)
 			ctxErr = err
 			return err
 		} else if err != nil {
 			close(kdt.Ch)
-			wg.Done()
 			addAndHandleXRayRecordingError(ctx1, err)
 			ctxErr = err
 			return err
@@ -169,7 +167,6 @@ func (kdt *KMSDecryptTomb) decrypt() (ctxErr error) {
 		case <-kdt.t.Dying():
 			log.Print("kMS Tomb Dying... ")
 			close(kdt.Ch)
-			wg.Done()
 			addAndHandleXRayRecordingError(ctx1, xray.AddMetadata(ctx1, segName, "KMS Tomb is Dying"))
 			return nil
 		}
