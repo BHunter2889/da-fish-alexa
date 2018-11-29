@@ -55,6 +55,10 @@ func (s *GeocodeService) GetGeoPoint(ctx context.Context) (GeoPoint, error) {
 		log.Printf("Failed to get Geocode Point: %s", err.Error())
 		return GeoPoint{}, err
 	}
+	err1 := xray.AddMetadata(ctx, "geocode-response-full", resp)
+	if err1 != nil {
+		log.Print(err)
+	}
 	return resp.GeoResourceSets[0].GeoResources[0].GeoPoint, nil
 }
 

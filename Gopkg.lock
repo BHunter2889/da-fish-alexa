@@ -14,7 +14,7 @@
   version = "v1.7.0"
 
 [[projects]]
-  digest = "1:342b0155b511a817c8b6fc6cbc0e59445f307755c06100a107feac13141abec7"
+  digest = "1:e87defb8a4142d83af7d6d8cc020943734f425ae86338539fe4e270f00aeb653"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -52,8 +52,8 @@
     "service/xray",
   ]
   pruneopts = ""
-  revision = "08df30d135d32f1eb21bb7754eb042aeca521a4b"
-  version = "v1.15.84"
+  revision = "89734ade0df0a4a437cbf4aa9c14e17daf37c5ac"
+  version = "v1.15.86"
 
 [[projects]]
   digest = "1:6bef876d8d6d10e42fb20eee63ea4c5d349b3d5aed0f0ce83b5ec3e3431099ad"

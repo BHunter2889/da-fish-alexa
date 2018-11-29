@@ -12,7 +12,7 @@
 # Happy Coding!
 
 service:
-  name: da-fish-alexa # NOTE: update this with your service name
+  name: bugcaster # NOTE: update this with your service name
   awsTracingConfig:
     mode: Active
 
@@ -89,8 +89,8 @@ package:
 
 
 functions:
-  da-fish-alexa:
-    handler: da-fish-alexa
+  bugcaster:
+    handler: bugcaster
     events:
       - alexaSkill: amzn1.ask.skill.2150256e-e459-46ee-b501-fa2bf46f70c3
 #        Below is an Example of a standard Http Endpoint impl for 2 different Lambda Function Endpoints.

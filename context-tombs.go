@@ -112,9 +112,9 @@ func (kdt *KMSDecryptTomb) decrypt() (ctxErr error) {
 	segName := fmt.Sprintf("KMSDecrypt.%s", kdt.name)
 
 	// This allows us to capture the performance of the entire decryption process.
-	// CaptureAsync should be used when running inside a goroutine.
-	xray.CaptureAsync(kdt.ctx, segName, func(ctx1 context.Context) error {
-		defer wg.Done()
+	// Do Not use `xray.CaptureAsync` even though per docs it seems appropriate. Breaks Everything.
+	err := xray.Capture(kdt.ctx, segName, func(ctx1 context.Context) error {
+		//defer wg.Done()
 
 		log.Print("New Decrypt...")
 		decodedBytes, err := base64.StdEncoding.DecodeString(kdt.s)
@@ -124,11 +124,13 @@ func (kdt *KMSDecryptTomb) decrypt() (ctxErr error) {
 			// Conditional Exists here solely for Demoing Context Cancellation.
 			if err.Error() == request.CanceledErrorCode {
 				close(kdt.Ch)
+				wg.Done()
 				log.Print("Context closed while in Decrypt, closed channel.")
 				ctxErr = err
 				return err
 			} else {
 				close(kdt.Ch)
+				wg.Done()
 				ctxErr = err
 				return err
 			}
@@ -142,12 +144,14 @@ func (kdt *KMSDecryptTomb) decrypt() (ctxErr error) {
 		// Conditional Exists here solely for Demoing Context Cancellation.
 		if err != nil && err.Error() == request.CanceledErrorCode {
 			close(kdt.Ch)
+			wg.Done()
 			log.Print("Context closed while in Decrypt, closed channel.")
 			addAndHandleXRayRecordingError(ctx1, err)
 			ctxErr = err
 			return err
 		} else if err != nil {
 			close(kdt.Ch)
+			wg.Done()
 			addAndHandleXRayRecordingError(ctx1, err)
 			ctxErr = err
 			return err
@@ -160,13 +164,16 @@ func (kdt *KMSDecryptTomb) decrypt() (ctxErr error) {
 		case kdt.Ch <- string(response.Plaintext[:]):
 			log.Print("kMS Response Channel select")
 			log.Print(string(response.Plaintext[:]))
+			wg.Done()
 			return nil
 		case <-kdt.t.Dying():
 			log.Print("kMS Tomb Dying... ")
 			close(kdt.Ch)
+			wg.Done()
 			addAndHandleXRayRecordingError(ctx1, xray.AddMetadata(ctx1, segName, "KMS Tomb is Dying"))
 			return nil
 		}
 	})
+	addAndHandleXRayRecordingError(kdt.ctx, err)
 	return
 }

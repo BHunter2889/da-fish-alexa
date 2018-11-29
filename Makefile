@@ -3,7 +3,7 @@ build:
 	dep ensure -v
 	dep ensure -update -v github.com/aws/aws-xray-sdk-go
 	go get
-	env GOOS=linux go build -ldflags="-s -w" -x -o bin/da-fish-alexa ./
+	env GOOS=linux go build -ldflags="-s -w" -x -o bin/bugcaster ./
 
 .PHONY: clean
 clean:
