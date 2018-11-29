@@ -93,6 +93,9 @@ functions:
     handler: da-fish-alexa
     events:
       - alexaSkill: amzn1.ask.skill.2150256e-e459-46ee-b501-fa2bf46f70c3
+#        Below is an Example of a standard Http Endpoint impl for 2 different Lambda Function Endpoints.
+#        Instead of building the project from the root directory like this one, it might make more sense to have
+#        a `hello` package directory and a `world` package directory
 #  hello:
   #    handler: bin/hello
   #    events:
