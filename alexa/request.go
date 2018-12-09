@@ -36,7 +36,8 @@ type Context struct {
 		APIAccessToken string `json:"apiAccessToken"`
 		APIEndpoint    string `json:"apiEndpoint"`
 		Device         struct {
-			DeviceID string `json:"deviceId,omitempty"`
+			DeviceID            string              `json:"deviceId,omitempty"`
+			SupportedInterfaces SupportedInterfaces `json:"supportedInterfaces,omitempty"`
 		} `json:"device,omitempty"`
 		Application struct {
 			ApplicationID string `json:"applicationId,omitempty"`
@@ -44,11 +45,38 @@ type Context struct {
 	} `json:"System,omitempty"`
 }
 
+// Interfaces Supported by the User's device. This is not comprehensive.
+type SupportedInterfaces struct {
+	APL struct {
+		Runtime struct {
+			MaxVersion string `json:"maxVersion,omitempty"`
+		} `json:"runtime,omitempty"`
+	} `json:"Alexa.Presentation.APL,omitempty"`
+	AudioPlayer struct{} `json:"AudioPlayer,omitempty"` // This appears to always be an empty object
+}
+/**
+APL Document UserEvents
+see: https://developer.amazon.com/docs/alexa-presentation-language/apl-support-for-your-skill.html#listen-for-apl-userevents-from-alexa
+
+Usage: `json:"event,omitempty"`
+ */
+type Event struct {
+	Source struct {
+		Type    string      `json:"type,omitempty"`
+		Handler string      `json:"handler,omitempty"`
+		ID      string      `json:"id,omitempty"`
+		Value   interface{} `json:"value,omitempty"`
+	} `json:"source,omitempty"`
+	Arguments []string `json:"arguments,omitempty"`
+}
+
 type ReqBody struct {
 	Type        string `json:"type"`
 	RequestID   string `json:"requestId"`
 	Timestamp   string `json:"timestamp"`
 	Locale      string `json:"locale"`
+	Token       string `json:"token,omitempty"`
+	Event       Event  `json:"event,omitempty"`
 	Intent      Intent `json:"intent,omitempty"`
 	Reason      string `json:"reason,omitempty"`
 	DialogState string `json:"dialogState,omitempty"`
