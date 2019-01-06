@@ -42,15 +42,18 @@ type Context struct {
 		Experiences []struct {
 			CanRotate bool `json:"canRotate"`
 			CanResize bool `json:"canResize"`
-		} `json:"experiences"`
-		Shape              string   `json:"shape"`       // supported: "RECTANGLE" (i.e. Echo Show), & "ROUND" (i.e. Echo Spot)
-		PixelWidth         int      `json:"pixelWidth"`  // maximum viewport value
-		PixelHeight        int      `json:"pixelHeight"` // maximum viewport value
-		Dpi                int      `json:"dpi"`
+		} `json:"experiences,omitempty"`
+		Shape              string   `json:"shape"`              // supported: "RECTANGLE" (i.e. Echo Show), & "ROUND" (i.e. Echo Spot)
+		PixelWidth         int      `json:"pixelWidth"`         // maximum viewport value
+		PixelHeight        int      `json:"pixelHeight"`        // maximum viewport value
+		Width              int      `json:"width"`              // Width of the viewport in dp.
+		Height             int      `json:"height"`             // Height of the viewport in dp.
+		Dpi                int      `json:"dpi"`                // The pixel density of the viewport.
 		CurrentPixelWidth  int      `json:"currentPixelWidth"`  // viewport width that is currently in use
 		CurrentPixelHeight int      `json:"currentPixelHeight"` // viewport height that is currently in use
-		Touch              []string `json:"touch"`              // i.e. ["SINGLE"]
-		Keyboard           []string `json:"keyboard"`           // i.e. ["DIRECTION"]
+		Theme              string   `json:"theme"`              // supported: "LIGHT" or "DARK" - The basic color scheme in use
+		Touch              []string `json:"touch,omitempty"`    // i.e. ["SINGLE"]
+		Keyboard           []string `json:"keyboard,omitempty"` // i.e. ["DIRECTION"]
 	} `json:"Viewport,omitempty"`
 	System struct {
 		APIAccessToken string `json:"apiAccessToken"`
