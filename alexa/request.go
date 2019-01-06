@@ -32,6 +32,26 @@ type Session struct {
 }
 
 type Context struct {
+	AudioPlayer struct {
+		PlayerActivity string `json:"playerActivity,omitempty"` // i.e. 'IDLE'
+	} `json:"AudioPlayer,omitempty"`
+	Display struct {
+		Token string `json:"token,omitempty"`
+	} `json:"Display,omitempty"`
+	Viewport struct {
+		Experiences []struct {
+			CanRotate bool `json:"canRotate"`
+			CanResize bool `json:"canResize"`
+		} `json:"experiences"`
+		Shape              string   `json:"shape"`       // supported: "RECTANGLE" (i.e. Echo Show), & "ROUND" (i.e. Echo Spot)
+		PixelWidth         int      `json:"pixelWidth"`  // maximum viewport value
+		PixelHeight        int      `json:"pixelHeight"` // maximum viewport value
+		Dpi                int      `json:"dpi"`
+		CurrentPixelWidth  int      `json:"currentPixelWidth"`  // viewport width that is currently in use
+		CurrentPixelHeight int      `json:"currentPixelHeight"` // viewport height that is currently in use
+		Touch              []string `json:"touch"`              // i.e. ["SINGLE"]
+		Keyboard           []string `json:"keyboard"`           // i.e. ["DIRECTION"]
+	} `json:"Viewport,omitempty"`
 	System struct {
 		APIAccessToken string `json:"apiAccessToken"`
 		APIEndpoint    string `json:"apiEndpoint"`
@@ -54,6 +74,7 @@ type SupportedInterfaces struct {
 	} `json:"Alexa.Presentation.APL,omitempty"`
 	AudioPlayer struct{} `json:"AudioPlayer,omitempty"` // This appears to always be an empty object
 }
+
 /**
 APL Document UserEvents
 see: https://developer.amazon.com/docs/alexa-presentation-language/apl-support-for-your-skill.html#listen-for-apl-userevents-from-alexa

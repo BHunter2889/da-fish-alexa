@@ -179,9 +179,9 @@ type Reprompt struct {
 }
 
 type Directives struct {
-	Type          string          `json:"type,omitempty"`
-	Token         string          `json:"token,omitempty"`
-	Document      apl.APLDocument `json:"document,omitempty"`
+	Type          string          `json:"type"` // i.e. "Alexa.Presentation.APL.RenderDocument"
+	Token         string          `json:"token"` // i.e. "adocument" - string reference used to invoke subsequent directives like ExecuteCommands
+	Document      apl.APLDocument `json:"document,omitempty"` // There may be other types of documents that can go here - TODO - generify the type if this becomes apparent.
 	DataSources   DataSources     `json:"datasources,omitempty"`
 	SlotToElicit  string          `json:"slotToElicit,omitempty"`
 	UpdatedIntent *UpdatedIntent  `json:"UpdatedIntent,omitempty"`
@@ -206,6 +206,30 @@ type DataSources struct {
 			} `json:"backgroundImage"`
 		} `json:"properties"`
 	} `json:"templateData,omitempty"`
+	BodyTemplate1Data struct {
+		Type            string      `json:"type"`
+		ObjectID        interface{} `json:"objectId,omitempty"`
+		BackgroundImage struct {
+			ContentDescription string `json:"contentDescription,omitempty"` // For Screen Readers. Should always be included but not "required".
+			SmallSourceURL     string `json:"smallSourceUrl,omitempty"`
+			MediumSourceURL     string `json:"mediumSourceUrl,omitempty"`
+			LargeSourceURL     string `json:"largeSourceUrl,omitempty"`
+			Sources            []struct { // TODO - Add Source struct and create builder to append new Sources.
+				URL          string `json:"url"`
+				Size         string `json:"size"`
+				WidthPixels  int    `json:"widthPixels,omitempty"`
+				HeightPixels int    `json:"heightPixels,omitempty"`
+			} `json:"sources,omitempty"`
+		} `json:"backgroundImage,omitempty"`
+		Title       string `json:"title,omitempty"` // Intent Response title Heading to display
+		TextContent struct {
+			PrimaryText struct {
+				Type string `json:"type,omitempty"`
+				Text string `json:"text,omitempty"` // The text to display. Dynamically populate after reading into structs, unless always returning a single static response from your template.
+			} `json:"primaryText,omitempty"`
+		} `json:"textContent,omitempty"`
+		LogoURL string `json:"logoUrl,omitempty"`
+	} `json:"bodyTemplate1Data,omitempty"`
 }
 
 type UpdatedIntent struct {
