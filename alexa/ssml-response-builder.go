@@ -16,6 +16,21 @@ func NewSSMLResponse(title string, text string) Response {
 	return r
 }
 
+func NewAPLResponse(title string, text string, directives []Directives) Response {
+	r := Response{
+		Version: "1.0",
+		Body: ResBody{
+			OutputSpeech: &Payload{
+				Type: "SSML",
+				SSML: text,
+			},
+			Directives: directives,
+			ShouldEndSession: true,
+		},
+	}
+	return r
+}
+
 type SSML struct {
 	text  string
 	pause string

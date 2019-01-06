@@ -2,6 +2,7 @@ package alexa
 
 import (
 	"da-fish-alexa/alexa"
+	"github.com/BHunter2889/da-fish-alexa/alexa/apl"
 	"log"
 )
 
@@ -178,13 +179,13 @@ type Reprompt struct {
 }
 
 type Directives struct {
-	Type          string         `json:"type,omitempty"`
-	Token         string         `json:"token,omitempty"`
-	Document      APLDocument    `json:"document,omitempty"`
-	DataSources   DataSources    `json:"datasources,omitempty"`
-	SlotToElicit  string         `json:"slotToElicit,omitempty"`
-	UpdatedIntent *UpdatedIntent `json:"UpdatedIntent,omitempty"`
-	PlayBehavior  string         `json:"playBehavior,omitempty"`
+	Type          string          `json:"type,omitempty"`
+	Token         string          `json:"token,omitempty"`
+	Document      apl.APLDocument `json:"document,omitempty"`
+	DataSources   DataSources     `json:"datasources,omitempty"`
+	SlotToElicit  string          `json:"slotToElicit,omitempty"`
+	UpdatedIntent *UpdatedIntent  `json:"UpdatedIntent,omitempty"`
+	PlayBehavior  string          `json:"playBehavior,omitempty"`
 	AudioItem     struct {
 		Stream struct {
 			Token                string `json:"token,omitempty"`
@@ -205,27 +206,6 @@ type DataSources struct {
 			} `json:"backgroundImage"`
 		} `json:"properties"`
 	} `json:"templateData,omitempty"`
-}
-
-// `json:"document,omitempty"`
-type APLDocument struct {
-	Type         string `json:"type,omitempty"`
-	Version      string `json:"version,omitempty"`
-	Theme        string `json:"theme,omitempty"`
-	MainTemplate struct {
-		Description string   `json:"description,omitempty"`
-		Parameters  []string `json:"parameters,omitempty"`
-		Items       []struct {
-			Type      string `json:"type,omitempty"`
-			Direction string `json:"direction,omitempty"`
-			Width     string `json:"width,omitempty"`
-			Height    string `json:"height,omitempty"`
-			Items     []struct {
-				Type   string `json:"type,omitempty"`
-				Source string `json:"source,omitempty"`
-			} `json:"items,omitempty"`
-		} `json:"items,omitempty"`
-	} `json:"mainTemplate,omitempty"`
 }
 
 type UpdatedIntent struct {
