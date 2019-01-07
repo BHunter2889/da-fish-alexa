@@ -167,18 +167,18 @@ type Response struct {
 }
 
 type ResBody struct {
-	OutputSpeech     *Payload     `json:"outputSpeech,omitempty"`
-	Card             *Payload     `json:"card,omitempty"`
-	Reprompt         *Reprompt    `json:"reprompt,omitempty"`
-	Directives       []Directives `json:"directives,omitempty"`
-	ShouldEndSession bool         `json:"shouldEndSession"`
+	OutputSpeech     *Payload    `json:"outputSpeech,omitempty"`
+	Card             *Payload    `json:"card,omitempty"`
+	Reprompt         *Reprompt   `json:"reprompt,omitempty"`
+	Directives       []Directive `json:"directives,omitempty"`
+	ShouldEndSession bool        `json:"shouldEndSession"`
 }
 
 type Reprompt struct {
 	OutputSpeech Payload `json:"outputSpeech,omitempty"`
 }
 
-type Directives struct {
+type Directive struct {
 	Type          string          `json:"type"` // i.e. "Alexa.Presentation.APL.RenderDocument"
 	Token         string          `json:"token"` // i.e. "adocument" - string reference used to invoke subsequent directives like ExecuteCommands
 	Document      apl.APLDocument `json:"document,omitempty"` // There may be other types of documents that can go here - TODO - generify the type if this becomes apparent.

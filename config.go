@@ -122,17 +122,17 @@ func NewBugCasterConfig(ctx context.Context) (err1 error) {
 }
 
 func KMSDecryptionWaiter() {
-	log.Print("Waiting on kMS Decryption...")
+	//log.Print("Waiting on kMS Decryption...")
 	cfg.FishRatingUrl = <-tombFR.Ch
-	log.Printf("FRU: %s", cfg.FishRatingUrl)
+	//log.Printf("FRU: %s", cfg.FishRatingUrl)
 	cfg.GeoKey = <-tombGK.Ch
-	log.Printf("GK: %s", cfg.GeoKey)
+	//log.Printf("GK: %s", cfg.GeoKey)
 	wg.Wait()
-	log.Print("Done Waiting On kMS Decryption.")
+	//log.Print("Done Waiting On kMS Decryption.")
 }
 
 func init() {
-	log.Print("Init Xray in Config")
+	//log.Print("Init Xray in Config")
 	err := xray.Configure(xray.Config{
 		LogLevel: "info",
 	})
@@ -140,7 +140,7 @@ func init() {
 }
 
 func (cfg *BugCasterConfig) LoadConfig(ctx context.Context) (err error) {
-	log.Print("Begin LoadConfig")
+	//log.Print("Begin LoadConfig")
 	wg.Add(2)
 	cfg.AlexaLocEndpoint = AlexaLocEndpoint
 

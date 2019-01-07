@@ -16,7 +16,7 @@ func NewSSMLResponse(title string, text string) Response {
 	return r
 }
 
-func NewAPLResponse(title string, text string, directives []Directives) Response {
+func NewAPLResponse(title string, text string, directives []Directive) Response {
 	r := Response{
 		Version: "1.0",
 		Body: ResBody{
@@ -46,11 +46,6 @@ func ParseString(text string) string {
 	text = strings.Replace(text, "+", "plus", -1)
 	text = strings.Replace(text, "@", "at", -1)
 	text = strings.Replace(text, "w/", "with", -1)
-	//text = strings.Replace(text, "in.", "inches", -1)
-	//text = strings.Replace(text, "s/h", "shipping and handling", -1)
-	//text = strings.Replace(text, " ac ", " after coupon ", -1)
-	//text = strings.Replace(text, "fs", "free shipping", -1)
-	//text = strings.Replace(text, "f/s", "free shipping", -1)
 	text = strings.Replace(text, "-", "", -1)
 	text = strings.Replace(text, "™", "", -1)
 	text = strings.Replace(text, "  ", " ", -1)
