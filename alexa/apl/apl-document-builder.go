@@ -6,21 +6,20 @@ import (
 	"os"
 )
 
-func ReadAplDocumentFromJsonFile(fileName string) (APLDocument, error) {
+func ReadAplDocumentFromJsonFile(fileName string, out APLDocument) (error) {
 	jsonFile, err := os.Open(fileName)
 	if err != nil {
-		return APLDocument{}, err
+		return err
 	}
 	defer jsonFile.Close()
 
 	bytes, _ := ioutil.ReadAll(jsonFile)
 
-	var apl APLDocument
-	if err := json.Unmarshal(bytes, &apl); err != nil {
-		return apl, err
+	if err := json.Unmarshal(bytes, &out); err != nil {
+		return err
 	}
 
-	return apl, nil
+	return nil
 }
 
 /**

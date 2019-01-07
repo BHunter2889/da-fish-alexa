@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/BHunter2889/da-fish-alexa/alexa"
+	"github.com/BHunter2889/da-fish-alexa/alexa/apl"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-xray-sdk-go/xray"
@@ -18,7 +19,14 @@ type BugCasterConfig struct {
 	GeoKey           string
 	GeoUrl           string
 	FishRatingUrl    string
-	t                tomb.Tomb
+	ImageUrls        struct {
+		BgImageMedPos1 string
+		BgImageMedPos2 string
+		BgImageMedNeg1 string
+		BugCasterLogo  string
+	}
+	APLTemplate apl.APLDocument
+	t           tomb.Tomb
 }
 
 // Defining as constants rather than reading from config file - maybe text w/ X-ray to see how much longer reading from
@@ -27,15 +35,19 @@ type BugCasterConfig struct {
 // %s - reserved for DeviceId
 const AlexaLocEndpoint = "/v1/devices/%s/settings/address/countryAndPostalCode"
 
+// Filename for the APL Document to read
+const AplDocFilename = "bugcaster-apl-doc-2.json"
+
 var (
-	kMS    *kms.KMS
-	sess   = session.Must(session.NewSession())
-	wg     sync.WaitGroup
-	chanFR <-chan string
-	chanGK <-chan string
-	tombFR *KMSDecryptTomb
-	tombGK *KMSDecryptTomb
-	t      tomb.Tomb
+	kMS        *kms.KMS
+	sess       = session.Must(session.NewSession())
+	wg         sync.WaitGroup
+	chanFR     <-chan string
+	chanGK     <-chan string
+	tombFR     *KMSDecryptTomb
+	tombGK     *KMSDecryptTomb
+	t          tomb.Tomb
+	supportAPL = false
 )
 
 type AlexaRequestHandler func(context.Context, alexa.Request) (alexa.Response, error)
@@ -44,6 +56,10 @@ type AlexaRequestHandler func(context.Context, alexa.Request) (alexa.Response, e
 func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 	return func(ctx context.Context, request alexa.Request) (response alexa.Response, err error) {
 		log.Print(request)
+
+		if  &request.Context.Display != nil {
+			supportAPL = true
+		}
 
 		// Put up a Border Wall (which they can very easily get around)
 		if request.Body.Locale != "en-US" && request.Body.Locale != "en-CA" {
@@ -69,7 +85,10 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 		log.Print(ctx)
 		addAndHandleXRayRecordingError(ctx, xray.AddMetadata(ctx, "lambda-context", ctx))
 
-		NewBugCasterConfig(ctx)
+		if err := NewBugCasterConfig(ctx); err != nil {
+			log.Print(err)
+			panic(err)
+		}
 
 		response, err = h(ctx, request)
 		if err != nil {
@@ -88,17 +107,18 @@ func NewKMS() *kms.KMS {
 	return c
 }
 
-func NewBugCasterConfig(ctx context.Context) {
+func NewBugCasterConfig(ctx context.Context) (err1 error) {
 	// Record Config Performance Impact and Profile Errors.
 	err := xray.Capture(ctx, "config.New", func(ctx1 context.Context) error {
 		log.Print("NewBugCasterConfig")
 		kMS = NewKMS()
 		cfg = new(BugCasterConfig)
-		cfg.LoadConfig(ctx)
+		err1 = cfg.LoadConfig(ctx)
 		return nil
 	})
 
 	addAndHandleXRayRecordingError(ctx, err)
+	return
 }
 
 func KMSDecryptionWaiter() {
@@ -119,7 +139,7 @@ func init() {
 	log.Print(err)
 }
 
-func (cfg *BugCasterConfig) LoadConfig(ctx context.Context) {
+func (cfg *BugCasterConfig) LoadConfig(ctx context.Context) (err error) {
 	log.Print("Begin LoadConfig")
 	wg.Add(2)
 	cfg.AlexaLocEndpoint = AlexaLocEndpoint
@@ -131,6 +151,20 @@ func (cfg *BugCasterConfig) LoadConfig(ctx context.Context) {
 		return nil
 	}))
 	cfg.GeoUrl = os.Getenv("GEO_SERVICE_URL")
+
+	if supportAPL {
+		cfg.ImageUrls.BgImageMedPos1 = os.Getenv("BG_IMAGE_MED_POS_1")
+		cfg.ImageUrls.BgImageMedPos2 = os.Getenv("BG_IMAGE_MED_POS_2")
+		cfg.ImageUrls.BgImageMedNeg1 = os.Getenv("BG_IMAGE_MED_NEG_1")
+		cfg.ImageUrls.BugCasterLogo = os.Getenv("BUGCASTER_LOGO")
+		cfg.APLTemplate = apl.APLDocument{}
+
+		// Consider Adding X-Ray Support to this...?
+		go func() {
+			err = apl.ReadAplDocumentFromJsonFile(AplDocFilename, cfg.APLTemplate)
+		}()
+	}
+	return
 }
 
 func addAndHandleXRayRecordingError(ctx context.Context, err error) {
