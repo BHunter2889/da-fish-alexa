@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func ReadAplDocumentFromJsonFile(fileName string, out APLDocument) (error) {
+func ReadAplDocumentFromJsonFile(fileName string, out APLDocument) error {
 	jsonFile, err := os.Open(fileName)
 	if err != nil {
 		return err

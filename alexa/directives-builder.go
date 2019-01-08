@@ -1,12 +1,19 @@
 package alexa
 
 import (
+	"encoding/json"
 	"github.com/BHunter2889/da-fish-alexa/alexa/apl"
+	"io/ioutil"
+	"os"
 )
+
+const renderDirectiveType = "Alexa.Presentation.APL.RenderDocument"
 
 type Directives struct {
 	Directives []Directive
 }
+
+type DirectiveOption func(token string, document apl.APLDocument, sources DataSources) Directive
 
 func (directives *Directives) NewBasicRenderDocumentDirective(token string, document apl.APLDocument, sources DataSources) {
 	if len(directives.Directives) == 0 || &directives.Directives == nil {
@@ -24,4 +31,33 @@ func NewBasicAPLDirectives(token string, document apl.APLDocument, sources DataS
 	d := Directives{}
 	d.NewBasicRenderDocumentDirective(token, document, sources)
 	return d
+}
+
+func ExtractNewRenderDocDirectiveFromJson(token string, fileName string, out *Directive) error {
+	jsonFile, err := os.Open(fileName)
+	if err != nil {
+		return err
+	}
+	defer jsonFile.Close()
+
+	bytes, _ := ioutil.ReadAll(jsonFile)
+
+	if err := json.Unmarshal(bytes, &out); err != nil {
+		return err
+	}
+
+	out.Token = token
+	out.Type = renderDirectiveType
+
+	return nil
+}
+
+func NewDirectivesList(opts ...Directive) []Directive {
+	dl := make([]Directive, 0)
+
+	for _, opt := range opts {
+		dl = append(dl, opt)
+	}
+
+	return dl
 }

@@ -1,7 +1,6 @@
 package alexa
 
 import (
-	"da-fish-alexa/alexa"
 	"github.com/BHunter2889/da-fish-alexa/alexa/apl"
 	"log"
 )
@@ -26,7 +25,7 @@ func NewSimpleResponse(title string, text string) Response {
 }
 
 func NewPermissionsRequestResponse() Response {
-	var builder alexa.SSMLBuilder
+	var builder SSMLBuilder
 	builder.Say("Bug Caster was unable to access your device's zip code and country information. ")
 	builder.Pause("750")
 	builder.Say("If you have not enabled Bug Caster to access this information, ")
@@ -52,7 +51,7 @@ func NewPermissionsRequestResponse() Response {
 }
 
 func NewUnsupportedLocationResponse() Response {
-	var builder alexa.SSMLBuilder
+	var builder SSMLBuilder
 	builder.Say("Bug Caster does not currently support device locales listed outside the United States or Canada. ")
 	builder.Pause("750")
 	builder.Say("If you would like us to provide support for your locale, ")
@@ -83,7 +82,7 @@ func NewUnsupportedLocationResponse() Response {
 }
 
 func NewLaunchRequestGetPermissionsResponse() Response {
-	var builder alexa.SSMLBuilder
+	var builder SSMLBuilder
 	builder.Say("Welcome to Bug Caster!")
 	builder.Pause("1000")
 	builder.Say("Bug Caster uses solunar theory and applied analytics to determine how probable fish activity translates to quality of fishing by the hour.")
@@ -133,7 +132,7 @@ func NewLaunchRequestGetPermissionsResponse() Response {
 }
 
 func NewDefaultErrorResponse() Response {
-	var builder alexa.SSMLBuilder
+	var builder SSMLBuilder
 	builder.Say("Bug Caster caught a snag downstream while processing your request. ")
 	builder.Pause("750")
 	builder.Say("I can't blame the wind, ")

@@ -219,7 +219,18 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 			fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %.1f miles per hour.", w))
 		}
 
-		response = alexa.NewSSMLResponse("Today's Fishing Forecast", fcstBuilder.Build())
+		if supportAPL {
+			rd := alexa.Directive{}
+			if err := alexa.ExtractNewRenderDocDirectiveFromJson("testing", filename, &rd); err != nil {
+				log.Print(err)
+			}
+			response = alexa.NewAPLResponse(
+				"Today's Fishing Forecast",
+				fcstBuilder.Build(),
+				alexa.NewDirectivesList(rd))
+		} else {
+			response = alexa.NewSSMLResponse("Today's Fishing Forecast", fcstBuilder.Build())
+		}
 		return nil
 	})
 
