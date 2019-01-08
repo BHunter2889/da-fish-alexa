@@ -13,7 +13,7 @@ type Directives struct {
 	Directives []Directive
 }
 
-type DirectiveOption func(token string, document apl.APLDocument, sources DataSources) Directive
+type DirectiveOption func(dir *Directives) (*Directives, error)
 
 func (directives *Directives) NewBasicRenderDocumentDirective(token string, document apl.APLDocument, sources DataSources) {
 	if len(directives.Directives) == 0 || &directives.Directives == nil {
@@ -51,6 +51,32 @@ func ExtractNewRenderDocDirectiveFromJson(token string, fileName string, out *Di
 
 	return nil
 }
+
+//func (dir *Directives) BuildDirectives() {
+//
+//}
+//
+//func ExtractRenderDocDirectiveOption(token string, fileName string) DirectiveOption {
+//	return func(dir *Directives) (directives *Directives, e error) {
+//
+//	}
+//	jsonFile, err := os.Open(fileName)
+//	if err != nil {
+//		return err
+//	}
+//	defer jsonFile.Close()
+//
+//	bytes, _ := ioutil.ReadAll(jsonFile)
+//
+//	if err := json.Unmarshal(bytes, &out); err != nil {
+//		return err
+//	}
+//
+//	out.Token = token
+//	out.Type = renderDirectiveType
+//
+//	return nil
+//}
 
 func NewDirectivesList(opts ...Directive) []Directive {
 	dl := make([]Directive, 0)
