@@ -57,7 +57,7 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 	return func(ctx context.Context, request alexa.Request) (response alexa.Response, err error) {
 		log.Print(request)
 
-		if  &request.Context.Display != nil {
+		if &request.Context.Display != nil {
 			supportAPL = true
 		}
 

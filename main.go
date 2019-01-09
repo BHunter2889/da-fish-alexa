@@ -227,7 +227,7 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 
 		if supportAPL {
 			rd := alexa.Directive{}
-			if err := alexa.ExtractNewRenderDocDirectiveFromJson("testing", filename, &rd); err != nil {
+			if err := alexa.ExtractNewRenderDocDirectiveFromJson("testing", AplDocFilename, &rd); err != nil {
 				log.Print(err)
 			}
 			rd.DataSources.BodyTemplate1Data.BackgroundImage.SmallSourceURL = imageUrl

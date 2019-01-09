@@ -24,7 +24,7 @@ func NewAPLResponse(title string, ssml string, directives []Directive) Response 
 				Type: "SSML",
 				SSML: ssml,
 			},
-			Directives: directives,
+			Directives:       directives,
 			ShouldEndSession: true,
 		},
 	}

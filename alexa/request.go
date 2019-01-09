@@ -83,7 +83,7 @@ APL Document UserEvents
 see: https://developer.amazon.com/docs/alexa-presentation-language/apl-support-for-your-skill.html#listen-for-apl-userevents-from-alexa
 
 Usage: `json:"event,omitempty"`
- */
+*/
 type Event struct {
 	Source struct {
 		Type    string      `json:"type,omitempty"`
