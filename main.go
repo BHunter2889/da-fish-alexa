@@ -193,7 +193,9 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 
 		// TODO Consider moving these response builds to a separate file.
 		var fcstBuilder alexa.SSMLBuilder
+		var imageUrl string
 		if r < 2 {
+			imageUrl = cfg.ImageUrls.BgImageMedNeg1
 			fcstBuilder.Say("It looks like the best time to go fishing over the next couple of hours is, ")
 			fcstBuilder.Pause("150")
 			fcstBuilder.Say("well, ")
@@ -202,6 +204,7 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 			fcstBuilder.Pause("500")
 			fcstBuilder.Say(fmt.Sprintf(" The top rating is well below average and the wind speed is %.1f miles per hour.", w))
 		} else if r >= 2 && r <= 3 {
+			imageUrl = cfg.ImageUrls.BgImageMedPos1
 			fcstBuilder.Say(fmt.Sprintf("It looks like a decent or possibly better time to go fishing %s.", t))
 			fcstBuilder.Say(" The forecast rating is on the plus side,")
 			fcstBuilder.Pause("100")
@@ -209,6 +212,7 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 			fcstBuilder.Pause("500")
 			fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %.1f miles per hour.", w))
 		} else {
+			imageUrl = cfg.ImageUrls.BgImageMedPos2
 			fcstBuilder.Say("The fish appear to be biting!")
 			fcstBuilder.Pause("750")
 			fcstBuilder.Say("Over the next couple hours the fishing looks great!")
@@ -219,17 +223,27 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 			fcstBuilder.Say(fmt.Sprintf("The wind speed is listed at %.1f miles per hour.", w))
 		}
 
+		ssml := fcstBuilder.Build()
+
 		if supportAPL {
 			rd := alexa.Directive{}
 			if err := alexa.ExtractNewRenderDocDirectiveFromJson("testing", filename, &rd); err != nil {
 				log.Print(err)
 			}
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.SmallSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.MediumSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.LargeSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[0].URL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[1].URL = imageUrl
+			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Type = "SSML"
+			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Text = ssml
+			rd.DataSources.BodyTemplate1Data.LogoURL = cfg.ImageUrls.BugCasterLogo
 			response = alexa.NewAPLResponse(
 				"Today's Fishing Forecast",
 				fcstBuilder.Build(),
 				alexa.NewDirectivesList(rd))
 		} else {
-			response = alexa.NewSSMLResponse("Today's Fishing Forecast", fcstBuilder.Build())
+			response = alexa.NewSSMLResponse("Today's Fishing Forecast", ssml)
 		}
 		return nil
 	})

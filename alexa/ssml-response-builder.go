@@ -2,13 +2,13 @@ package alexa
 
 import "strings"
 
-func NewSSMLResponse(title string, text string) Response {
+func NewSSMLResponse(title string, ssml string) Response {
 	r := Response{
 		Version: "1.0",
 		Body: ResBody{
 			OutputSpeech: &Payload{
 				Type: "SSML",
-				SSML: text,
+				SSML: ssml,
 			},
 			ShouldEndSession: true,
 		},
@@ -16,13 +16,13 @@ func NewSSMLResponse(title string, text string) Response {
 	return r
 }
 
-func NewAPLResponse(title string, text string, directives []Directive) Response {
+func NewAPLResponse(title string, ssml string, directives []Directive) Response {
 	r := Response{
 		Version: "1.0",
 		Body: ResBody{
 			OutputSpeech: &Payload{
 				Type: "SSML",
-				SSML: text,
+				SSML: ssml,
 			},
 			Directives: directives,
 			ShouldEndSession: true,

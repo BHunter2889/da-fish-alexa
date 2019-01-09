@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// Note: This won't work as the standard file also includes a sibling DataSources object
 func ReadAplDocumentFromJsonFile(fileName string, out APLDocument) error {
 	jsonFile, err := os.Open(fileName)
 	if err != nil {
