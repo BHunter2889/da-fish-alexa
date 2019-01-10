@@ -1,4 +1,7 @@
-{
+package main
+
+const (
+	aplJson = `{
     "document": {
         "type": "APL",
         "version": "1.0",
@@ -242,4 +245,5 @@
             "logoUrl": "https://s3.amazonaws.com/bugcaster-resources/bugcaster-logo.PNG"
         }
     }
-}
+}`
+)

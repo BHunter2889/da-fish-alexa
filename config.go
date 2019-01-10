@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"github.com/BHunter2889/da-fish-alexa/alexa"
-	"github.com/BHunter2889/da-fish-alexa/alexa/apl"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-xray-sdk-go/xray"
@@ -25,8 +24,8 @@ type BugCasterConfig struct {
 		BgImageMedNeg1 string
 		BugCasterLogo  string
 	}
-	APLTemplate apl.APLDocument
-	t           tomb.Tomb
+	APLDirectiveTemplate alexa.Directive
+	t                    tomb.Tomb
 }
 
 // Defining as constants rather than reading from config file - maybe text w/ X-ray to see how much longer reading from
@@ -157,11 +156,14 @@ func (cfg *BugCasterConfig) LoadConfig(ctx context.Context) (err error) {
 		cfg.ImageUrls.BgImageMedPos2 = os.Getenv("BG_IMAGE_MED_POS_2")
 		cfg.ImageUrls.BgImageMedNeg1 = os.Getenv("BG_IMAGE_MED_NEG_1")
 		cfg.ImageUrls.BugCasterLogo = os.Getenv("BUGCASTER_LOGO")
-		cfg.APLTemplate = apl.APLDocument{}
 
 		// Consider Adding X-Ray Support to this...?
 		go func() {
-			err = apl.ReadAplDocumentFromJsonFile(AplDocFilename, cfg.APLTemplate)
+			rd := alexa.Directive{}
+			if err := alexa.ExtractNewRenderDocDirectiveFromString("testing", aplJson, &rd); err != nil {
+				log.Print(err)
+			}
+			cfg.APLDirectiveTemplate = rd
 		}()
 	}
 	return

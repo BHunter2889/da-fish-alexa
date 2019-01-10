@@ -13,6 +13,8 @@ import (
 	"strings"
 )
 
+//go:generate go run scripts/includeJson.go
+
 var (
 	cfg           *BugCasterConfig
 	defaultUserIp = "127.0.0.1"
@@ -226,20 +228,17 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 		ssml := fcstBuilder.Build()
 
 		if supportAPL {
-			rd := alexa.Directive{}
-			if err := alexa.ExtractNewRenderDocDirectiveFromJson("testing", AplDocFilename, &rd); err != nil {
-				log.Print(err)
-			}
+			rd := cfg.APLDirectiveTemplate
 			rd.DataSources.BodyTemplate1Data.BackgroundImage.SmallSourceURL = imageUrl
 			rd.DataSources.BodyTemplate1Data.BackgroundImage.MediumSourceURL = imageUrl
 			rd.DataSources.BodyTemplate1Data.BackgroundImage.LargeSourceURL = imageUrl
 			rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[0].URL = imageUrl
 			rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[1].URL = imageUrl
-			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Type = "SSML"
+			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Type = "PlainText"
 			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Text = ssml
 			rd.DataSources.BodyTemplate1Data.LogoURL = cfg.ImageUrls.BugCasterLogo
 			response = alexa.NewAPLResponse(
-				"Today's Fishing Forecast",
+				"Today's Fishing Forecast - Next Two Hours",
 				fcstBuilder.Build(),
 				alexa.NewDirectivesList(rd))
 		} else {

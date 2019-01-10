@@ -31,6 +31,8 @@ func NewBasicAPLDirectives(token string, document apl.APLDocument, sources DataS
 	return d
 }
 
+// Read from JSON File. Can't store the JSON in the binary so this is here in case you
+// want to fetch the file from somewhere else.
 func ExtractNewRenderDocDirectiveFromJson(token string, fileName string, out *Directive) error {
 	jsonFile, err := os.Open(fileName)
 	if err != nil {
@@ -44,6 +46,16 @@ func ExtractNewRenderDocDirectiveFromJson(token string, fileName string, out *Di
 		return err
 	}
 
+	out.Token = token
+	out.Type = renderDirectiveType
+
+	return nil
+}
+
+func ExtractNewRenderDocDirectiveFromString(token string, jsonString string, out *Directive) error {
+	if err := json.Unmarshal([]byte(jsonString), &out); err != nil {
+		return err
+	}
 	out.Token = token
 	out.Type = renderDirectiveType
 
