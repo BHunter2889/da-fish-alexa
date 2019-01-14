@@ -17,13 +17,7 @@ const (
             }
         ],
         "resources": [
-            {
-                "description": "Stock color for the light theme",
-                "colors": {
-                    "colorTextPrimary": "#151920"
-                }
-            },
-            {
+			{
                 "description": "Stock color for the dark theme",
                 "when": "${viewport.theme == 'dark'}",
                 "colors": {
@@ -31,8 +25,24 @@ const (
                 }
             },
             {
+                "description": "Stock color for the light theme",
+                "when": "${viewport.theme == 'light'}",
                 "colors": {
-                    "colorBackgroundOverlay": "#00000088"
+                    "colorTextPrimary": "#151920"
+                }
+            },
+			{
+                "description": "Stock overlay color for the dark theme",
+                "when": "${viewport.theme == 'dark'}",
+                "colors": {
+                    "colorBackgroundOverlay": "#00000050"
+                }
+            },
+            {
+                "description": "Stock overlay color for the light theme",
+                "when": "${viewport.theme == 'light'}",
+                "colors": {
+					"colorBackgroundOverlay": "#FAFAFA77"
                 }
             },
             {
@@ -161,16 +171,7 @@ const (
                             "grow": 1,
                             "paddingLeft": "@marginLeft",
                             "paddingRight": "@marginRight",
-                            "paddingBottom": "@marginBottom",
-                            "items": [
-                                {
-                                    "type": "Text",
-                                    "text": "${payload.bodyTemplate1Data.textContent.primaryText.text}",
-                                    "fontSize": "@textSizeBody",
-                                    "spacing": "@spacingSmall",
-                                    "style": "textStyleBody"
-                                }
-                            ]
+                            "paddingBottom": "@marginBottom"
                         }
                     ]
                 },

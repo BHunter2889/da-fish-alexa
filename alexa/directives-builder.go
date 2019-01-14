@@ -62,10 +62,11 @@ func ExtractNewRenderDocDirectiveFromString(token string, jsonString string, out
 	return nil
 }
 
-func NewDirectivesList(opts ...Directive) []Directive {
+func NewDirectivesList(title string, opts ...Directive) []Directive {
 	dl := make([]Directive, 0)
 
 	for _, opt := range opts {
+		opt.DataSources.BodyTemplate1Data.Title = title
 		dl = append(dl, opt)
 	}
 
@@ -74,7 +75,7 @@ func NewDirectivesList(opts ...Directive) []Directive {
 
 type Directive struct {
 	Type          string          `json:"type"`               // i.e. "Alexa.Presentation.APL.RenderDocument"
-	Token         string          `json:"token"`              // i.e. "adocument" - string reference used to invoke subsequent directives like ExecuteCommands
+	Token         string          `json:"token"`              // i.e. "a-document" - string reference used to invoke subsequent directives like ExecuteCommands
 	Document      apl.APLDocument `json:"document,omitempty"` // There may be other types of documents that can go here - TODO - generify the type if this becomes apparent.
 	DataSources   DataSources     `json:"datasources,omitempty"`
 	SlotToElicit  string          `json:"slotToElicit,omitempty"`

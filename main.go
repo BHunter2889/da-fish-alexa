@@ -72,6 +72,19 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 
 				addAndHandleXRayRecordingError(ctx, xErr)
 				response = alexa.NewDefaultErrorResponse()
+				if supportAPL {
+					imageUrl := cfg.ImageUrls.BgImageMedNeg1
+					rd := cfg.APLDirectiveTemplate
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.SmallSourceURL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.MediumSourceURL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.LargeSourceURL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[0].URL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[1].URL = imageUrl
+					rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Type = "PlainText"
+					rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Text = response.Body.OutputSpeech.SSML
+					rd.DataSources.BodyTemplate1Data.LogoURL = cfg.ImageUrls.BugCasterLogo
+					response.AddDirectives(alexa.NewDirectivesList("BugCaster Under Maintenance", rd))
+				}
 			}
 		}()
 
@@ -238,11 +251,10 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Text = ssml
 			rd.DataSources.BodyTemplate1Data.LogoURL = cfg.ImageUrls.BugCasterLogo
 			response = alexa.NewAPLResponse(
-				"Today's Fishing Forecast - Next Two Hours",
 				fcstBuilder.Build(),
-				alexa.NewDirectivesList(rd))
+				alexa.NewDirectivesList("Today's Fishing Forecast - Next Two Hours", rd))
 		} else {
-			response = alexa.NewSSMLResponse("Today's Fishing Forecast", ssml)
+			response = alexa.NewSSMLResponse(ssml)
 		}
 		return nil
 	})
@@ -252,8 +264,22 @@ func HandleTodaysFishRatingIntent(ctx context.Context, request alexa.Request) (r
 }
 
 func HandleLaunchRequest(ctx context.Context, request alexa.Request) (response alexa.Response) {
+	wg.Wait()
 	err := xray.Capture(ctx, "LaunchRequestIntent", func(ctx1 context.Context) error {
 		response = alexa.NewLaunchRequestGetPermissionsResponse()
+		if supportAPL {
+			imageUrl := cfg.ImageUrls.BgImageMedPos1
+			rd := cfg.APLDirectiveTemplate
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.SmallSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.MediumSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.LargeSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[0].URL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[1].URL = imageUrl
+			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Type = "PlainText"
+			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Text = "Please make sure your device location permission are enabled. New content and features coming soon! BugCaster appreciates your feedback via reviews in the Alexa Skill Store."
+			rd.DataSources.BodyTemplate1Data.LogoURL = cfg.ImageUrls.BugCasterLogo
+			response.AddDirectives(alexa.NewDirectivesList("Welcome To BugCaster!", rd))
+		}
 		return nil
 	})
 
@@ -262,6 +288,7 @@ func HandleLaunchRequest(ctx context.Context, request alexa.Request) (response a
 }
 
 func HandleHelpIntent(ctx context.Context, request alexa.Request) (response alexa.Response) {
+	wg.Wait()
 	err := xray.Capture(ctx, "HelpIntent", func(ctx1 context.Context) error {
 		var builder alexa.SSMLBuilder
 		builder.Say("Here are some of the things you can ask:")
@@ -271,7 +298,20 @@ func HandleHelpIntent(ctx context.Context, request alexa.Request) (response alex
 		builder.Say("When is the best time to go fishing?")
 		builder.Pause("1000")
 		builder.Say("Get my fishing forecast please.")
-		response = alexa.NewSSMLResponse("BugCaster Help", builder.Build())
+		response = alexa.NewSSMLResponse(builder.Build())
+		if supportAPL {
+			imageUrl := cfg.ImageUrls.BgImageMedPos1
+			rd := cfg.APLDirectiveTemplate
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.SmallSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.MediumSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.LargeSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[0].URL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[1].URL = imageUrl
+			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Type = "PlainText"
+			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Text = response.Body.OutputSpeech.SSML
+			rd.DataSources.BodyTemplate1Data.LogoURL = cfg.ImageUrls.BugCasterLogo
+			response.AddDirectives(alexa.NewDirectivesList("BugCaster Help", rd))
+		}
 		return nil
 	})
 
@@ -304,7 +344,20 @@ func HandleAboutIntent(ctx context.Context, request alexa.Request) (response ale
 		builder.Pause("1000")
 		builder.Say("We hope Bug Caster improves your fishing experiences and appreciate any feedback through reviews on the skill page in the Alexa Skill Store! ")
 
-		response = alexa.NewSSMLResponse("About BugCaster", builder.Build())
+		response = alexa.NewSSMLResponse(builder.Build())
+		if supportAPL {
+			imageUrl := cfg.ImageUrls.BgImageMedPos1
+			rd := cfg.APLDirectiveTemplate
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.SmallSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.MediumSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.LargeSourceURL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[0].URL = imageUrl
+			rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[1].URL = imageUrl
+			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Type = "PlainText"
+			rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Text = `"Ask Bug Caster for Today's Fishing Forecast." New content and features coming soon! BugCaster appreciates your feedback via reviews in the Alexa Skill Store.`
+			rd.DataSources.BodyTemplate1Data.LogoURL = cfg.ImageUrls.BugCasterLogo
+			response.AddDirectives(alexa.NewDirectivesList("About BugCaster", rd))
+		}
 		return nil
 	})
 
@@ -320,6 +373,19 @@ func Handler(ctx context.Context, request alexa.Request) (response alexa.Respons
 			log.Print("Benzos delivered in Root Handler.")
 			log.Print(r)
 			response = alexa.NewDefaultErrorResponse()
+			if supportAPL {
+				imageUrl := cfg.ImageUrls.BgImageMedNeg1
+				rd := cfg.APLDirectiveTemplate
+				rd.DataSources.BodyTemplate1Data.BackgroundImage.SmallSourceURL = imageUrl
+				rd.DataSources.BodyTemplate1Data.BackgroundImage.MediumSourceURL = imageUrl
+				rd.DataSources.BodyTemplate1Data.BackgroundImage.LargeSourceURL = imageUrl
+				rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[0].URL = imageUrl
+				rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[1].URL = imageUrl
+				rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Type = "PlainText"
+				rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Text = response.Body.OutputSpeech.SSML
+				rd.DataSources.BodyTemplate1Data.LogoURL = cfg.ImageUrls.BugCasterLogo
+				response.AddDirectives(alexa.NewDirectivesList("BugCaster Under Maintenance", rd))
+			}
 		}
 	}()
 

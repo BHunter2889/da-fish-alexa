@@ -14,7 +14,7 @@
   version = "v1.8.1"
 
 [[projects]]
-  digest = "1:36f7c4299f618301b565cf018e16830811cd3040c487df3b9b10250d6e823cdc"
+  digest = "1:d308a6c1896a41fe2cc8b822acd7a9a40174cde114a0236b77c5174bf2d67934"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -53,8 +53,8 @@
     "service/xray",
   ]
   pruneopts = ""
-  revision = "1f8a24693bc965514ee0d7aadbabe0ceed184a88"
-  version = "v1.16.16"
+  revision = "aabf189db35ba7eb5a35afe6d681fc0f70954fca"
+  version = "v1.16.18"
 
 [[projects]]
   digest = "1:84ba58ad21a3056ea7168d9448f292b3bc29815e015c21d3c1f97d2961921369"
@@ -100,14 +100,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8f8dcac9a61bcd730617c266a2329e0eb49e3d2f7be239f4e64d9344666e0cba"
+  digest = "1:7ec13687f85b25087fe05f6ea8dd116013a8263f8eb7e057da7664bc7599d2d4"
   name = "golang.org/x/net"
   packages = [
     "context",
     "context/ctxhttp",
   ]
   pruneopts = ""
-  revision = "be1c187aa6c66b9daa1d9461c228d17e9dd2cab7"
+  revision = "915654e7eabcea33ae277abbecf52f0d8b7a9fdc"
 
 [[projects]]
   branch = "v2"

@@ -15,21 +15,19 @@
         ],
         "resources": [
             {
-                "description": "Stock color for the light theme",
-                "colors": {
-                    "colorTextPrimary": "#151920"
-                }
-            },
-            {
                 "description": "Stock color for the dark theme",
                 "when": "${viewport.theme == 'dark'}",
                 "colors": {
-                    "colorTextPrimary": "#f0f1ef"
+                    "colorTextPrimary": "#f0f1ef",
+                    "colorBackgroundOverlay": "#00000050"
                 }
             },
             {
+                "description": "Stock color for the light theme",
+                "when": "${viewport.theme == 'light'}",
                 "colors": {
-                    "colorBackgroundOverlay": "#00000088"
+                    "colorTextPrimary": "#151920",
+                    "colorBackgroundOverlay": "#FAFAFA77"
                 }
             },
             {
@@ -158,16 +156,7 @@
                             "grow": 1,
                             "paddingLeft": "@marginLeft",
                             "paddingRight": "@marginRight",
-                            "paddingBottom": "@marginBottom",
-                            "items": [
-                                {
-                                    "type": "Text",
-                                    "text": "${payload.bodyTemplate1Data.textContent.primaryText.text}",
-                                    "fontSize": "@textSizeBody",
-                                    "spacing": "@spacingSmall",
-                                    "style": "textStyleBody"
-                                }
-                            ]
+                            "paddingBottom": "@marginBottom"
                         }
                     ]
                 },

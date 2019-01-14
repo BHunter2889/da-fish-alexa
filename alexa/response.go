@@ -158,6 +158,10 @@ func NewDefaultErrorResponse() Response {
 	return r
 }
 
+func (r *Response) AddDirectives(d []Directive) {
+	r.Body.Directives = d
+}
+
 type Response struct {
 	Version           string                 `json:"version"`
 	SessionAttributes map[string]interface{} `json:"sessionAttributes,omitempty"`

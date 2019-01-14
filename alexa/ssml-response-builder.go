@@ -2,7 +2,7 @@ package alexa
 
 import "strings"
 
-func NewSSMLResponse(title string, ssml string) Response {
+func NewSSMLResponse(ssml string) Response {
 	r := Response{
 		Version: "1.0",
 		Body: ResBody{
@@ -16,7 +16,7 @@ func NewSSMLResponse(title string, ssml string) Response {
 	return r
 }
 
-func NewAPLResponse(title string, ssml string, directives []Directive) Response {
+func NewAPLResponse(ssml string, directives []Directive) Response {
 	r := Response{
 		Version: "1.0",
 		Body: ResBody{
@@ -41,7 +41,6 @@ type SSMLBuilder struct {
 }
 
 func ParseString(text string) string {
-	text = strings.ToLower(text)
 	text = strings.Replace(text, "&", "and", -1)
 	text = strings.Replace(text, "+", "plus", -1)
 	text = strings.Replace(text, "@", "at", -1)

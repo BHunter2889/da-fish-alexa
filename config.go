@@ -56,6 +56,7 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 	return func(ctx context.Context, request alexa.Request) (response alexa.Response, err error) {
 		log.Print(request)
 
+		// TODO - Find a better way to organize this APL support
 		if &request.Context.Display != nil {
 			supportAPL = true
 		}
@@ -65,8 +66,16 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 			return alexa.NewUnsupportedLocationResponse(), nil
 		}
 
-		// If this is a Launch Request, we don't need Config at all, so kick it back out before it causes problems
+		// If this is a Launch Request, we only need APL Config, so kick it back out
+		// after setting images info and before it causes problems
 		if request.Body.Type == "LaunchRequest" {
+			cfg = new(BugCasterConfig)
+			conditionallyAddAPLSupportToConfig()
+			return HandleLaunchRequest(ctx, request), nil
+		}
+		if request.Body.Intent.Name == alexa.HelpIntent {
+			cfg = new(BugCasterConfig)
+			conditionallyAddAPLSupportToConfig()
 			return HandleLaunchRequest(ctx, request), nil
 		}
 
@@ -77,6 +86,19 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 				log.Print(err)
 				log.Print(r)
 				response = alexa.NewDefaultErrorResponse()
+				if supportAPL {
+					imageUrl := cfg.ImageUrls.BgImageMedNeg1
+					rd := cfg.APLDirectiveTemplate
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.SmallSourceURL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.MediumSourceURL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.LargeSourceURL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[0].URL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[1].URL = imageUrl
+					rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Type = "PlainText"
+					rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Text = response.Body.OutputSpeech.SSML
+					rd.DataSources.BodyTemplate1Data.LogoURL = cfg.ImageUrls.BugCasterLogo
+					response.AddDirectives(alexa.NewDirectivesList("BugCaster Under Maintenance", rd))
+				}
 			}
 		}()
 
@@ -151,22 +173,28 @@ func (cfg *BugCasterConfig) LoadConfig(ctx context.Context) (err error) {
 	}))
 	cfg.GeoUrl = os.Getenv("GEO_SERVICE_URL")
 
+	conditionallyAddAPLSupportToConfig()
+
+	return
+}
+
+func conditionallyAddAPLSupportToConfig() {
 	if supportAPL {
+		wg.Add(1)
+		// Consider Adding X-Ray Support to this...?
+		go func() {
+			defer wg.Done()
+			rd := alexa.Directive{}
+			if err := alexa.ExtractNewRenderDocDirectiveFromString("bugcaster-default", aplJson, &rd); err != nil {
+				log.Print("ERROR READING APL TEMPLATE", err)
+			}
+			cfg.APLDirectiveTemplate = rd
+		}()
 		cfg.ImageUrls.BgImageMedPos1 = os.Getenv("BG_IMAGE_MED_POS_1")
 		cfg.ImageUrls.BgImageMedPos2 = os.Getenv("BG_IMAGE_MED_POS_2")
 		cfg.ImageUrls.BgImageMedNeg1 = os.Getenv("BG_IMAGE_MED_NEG_1")
 		cfg.ImageUrls.BugCasterLogo = os.Getenv("BUGCASTER_LOGO")
-
-		// Consider Adding X-Ray Support to this...?
-		go func() {
-			rd := alexa.Directive{}
-			if err := alexa.ExtractNewRenderDocDirectiveFromString("testing", aplJson, &rd); err != nil {
-				log.Print(err)
-			}
-			cfg.APLDirectiveTemplate = rd
-		}()
 	}
-	return
 }
 
 func addAndHandleXRayRecordingError(ctx context.Context, err error) {
