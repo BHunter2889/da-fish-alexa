@@ -55,18 +55,20 @@ type AlexaRequestHandler func(context.Context, alexa.Request) (alexa.Response, e
 func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 	return func(ctx context.Context, request alexa.Request) (response alexa.Response, err error) {
 		log.Print("REQUEST: ", &request)
-		log.Print("REQUEST.CONTEXT: ", &request.Context)
-		log.Print("REQUEST.BODY", &request.Body)
 
 		// TODO - Find a better way to organize this APL support
 		if &request.Context.System.Device.SupportedInterfaces != nil &&
 			&request.Context.System.Device.SupportedInterfaces.APL != nil &&
 			&request.Context.System.Device.SupportedInterfaces.APL.Runtime != nil &&
-			&request.Context.System.Device.SupportedInterfaces.APL.Runtime.MaxVersion != nil {
+			(request.Context.System.Device.SupportedInterfaces.APL.Runtime.MaxVersion != "" ||
+				len(request.Context.System.Device.SupportedInterfaces.APL.Runtime.MaxVersion) > 0) {
 			supportAPL = true
 			log.Println(&request.Context.System.Device.SupportedInterfaces)
 			log.Println(&request.Context.System.Device.SupportedInterfaces.APL)
 			log.Println(&request.Context.System.Device.SupportedInterfaces.APL.Runtime.MaxVersion)
+			log.Println(request.Context.System.Device.SupportedInterfaces)
+			log.Println(request.Context.System.Device.SupportedInterfaces.APL)
+			log.Println(request.Context.System.Device.SupportedInterfaces.APL.Runtime.MaxVersion)
 		}
 		log.Print("APL_IS_SUPPORTED: ", supportAPL)
 
