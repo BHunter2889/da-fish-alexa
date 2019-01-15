@@ -151,6 +151,8 @@ const (
                     "when": "${viewport.shape == 'round'}",
                     "type": "Container",
                     "direction": "column",
+					"height": "100vh",
+                    "width": "100vw",
                     "items": [
                         {
                             "type": "Image",

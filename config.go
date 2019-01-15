@@ -54,12 +54,20 @@ type AlexaRequestHandler func(context.Context, alexa.Request) (alexa.Response, e
 // Wrap The Handler so that we can use context to do some config BEFORE proceeding with handler.
 func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 	return func(ctx context.Context, request alexa.Request) (response alexa.Response, err error) {
-		log.Print(request)
+		log.Print("REQUEST: ", &request)
+		log.Print("REQUEST.CONTEXT: ", &request.Context)
+		log.Print("REQUEST.BODY", &request.Body)
 
 		// TODO - Find a better way to organize this APL support
-		if &request.Context.Display != nil {
+		if &request.Context.System.Device.SupportedInterfaces != nil &&
+			&request.Context.System.Device.SupportedInterfaces.APL != nil &&
+			&request.Context.System.Device.SupportedInterfaces.APL.Runtime != nil {
 			supportAPL = true
+			log.Println(&request.Context.System.Device.SupportedInterfaces)
+			log.Println(&request.Context.System.Device.SupportedInterfaces.APL
+			)
 		}
+		log.Print("APL_IS_SUPPORTED: ", supportAPL)
 
 		// Put up a Border Wall (which they can very easily get around)
 		if request.Body.Locale != "en-US" && request.Body.Locale != "en-CA" {
@@ -76,7 +84,7 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 		if request.Body.Intent.Name == alexa.HelpIntent {
 			cfg = new(BugCasterConfig)
 			conditionallyAddAPLSupportToConfig()
-			return HandleLaunchRequest(ctx, request), nil
+			return HandleHelpIntent(ctx, request), nil
 		}
 
 		// Benzos PRN - Take once at bedtime as needed. (Defer a panic resolution which returns a default error voice response to the user.)

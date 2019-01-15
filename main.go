@@ -45,6 +45,7 @@ func IntentDispatcher(ctx context.Context, request alexa.Request) alexa.Response
 		killAllTombs(ctx)
 		response = HandleAboutIntent(ctx, request)
 	}
+	log.Print("RESPONSE: ", response)
 	return response
 }
 
