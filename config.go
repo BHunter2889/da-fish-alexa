@@ -61,10 +61,12 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 		// TODO - Find a better way to organize this APL support
 		if &request.Context.System.Device.SupportedInterfaces != nil &&
 			&request.Context.System.Device.SupportedInterfaces.APL != nil &&
-			&request.Context.System.Device.SupportedInterfaces.APL.Runtime != nil {
+			&request.Context.System.Device.SupportedInterfaces.APL.Runtime != nil &&
+			&request.Context.System.Device.SupportedInterfaces.APL.Runtime.MaxVersion != nil {
 			supportAPL = true
 			log.Println(&request.Context.System.Device.SupportedInterfaces)
 			log.Println(&request.Context.System.Device.SupportedInterfaces.APL)
+			log.Println(&request.Context.System.Device.SupportedInterfaces.APL.Runtime.MaxVersion)
 		}
 		log.Print("APL_IS_SUPPORTED: ", supportAPL)
 
