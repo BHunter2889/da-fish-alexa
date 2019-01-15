@@ -64,8 +64,7 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 			&request.Context.System.Device.SupportedInterfaces.APL.Runtime != nil {
 			supportAPL = true
 			log.Println(&request.Context.System.Device.SupportedInterfaces)
-			log.Println(&request.Context.System.Device.SupportedInterfaces.APL
-			)
+			log.Println(&request.Context.System.Device.SupportedInterfaces.APL)
 		}
 		log.Print("APL_IS_SUPPORTED: ", supportAPL)
 
