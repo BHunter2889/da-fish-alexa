@@ -6,7 +6,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-xray-sdk-go/xray"
-	"gopkg.in/tomb.v2"
 	"log"
 	"os"
 	"sync"
@@ -18,7 +17,6 @@ type BugCasterConfig struct {
 	GeoKey           string
 	GeoUrl           string
 	FishRatingUrl    string
-	t                tomb.Tomb
 }
 
 // Defining as constants rather than reading from config file - maybe text w/ X-ray to see how much longer reading from
@@ -35,7 +33,6 @@ var (
 	chanGK <-chan string
 	tombFR *KMSDecryptTomb
 	tombGK *KMSDecryptTomb
-	t      tomb.Tomb
 )
 
 type AlexaRequestHandler func(context.Context, alexa.Request) (alexa.Response, error)
