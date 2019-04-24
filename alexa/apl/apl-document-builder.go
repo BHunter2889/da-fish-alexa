@@ -29,7 +29,7 @@ they are encountered.
 TODO - Continue to add any new options available when using different templates, etc.
 
 `json:"document,omitempty"`
- */
+*/
 type APLDocument struct {
 	Type    string `json:"type,omitempty"`
 	Version string `json:"version,omitempty"`

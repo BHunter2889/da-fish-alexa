@@ -20,9 +20,9 @@ func (directives *Directives) NewBasicRenderDocumentDirective(token string, docu
 		directives.Directives = make([]Directive, 1)
 	}
 	directives.Directives = append(directives.Directives, Directive{
-		Type: "Alexa.Presentation.APL.RenderDocument",
-		Token: token,
-		Document: document,
+		Type:        "Alexa.Presentation.APL.RenderDocument",
+		Token:       token,
+		Document:    document,
 		DataSources: sources,
 	})
 }

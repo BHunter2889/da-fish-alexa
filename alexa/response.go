@@ -178,8 +178,8 @@ type Reprompt struct {
 }
 
 type Directive struct {
-	Type          string          `json:"type"` // i.e. "Alexa.Presentation.APL.RenderDocument"
-	Token         string          `json:"token"` // i.e. "adocument" - string reference used to invoke subsequent directives like ExecuteCommands
+	Type          string          `json:"type"`               // i.e. "Alexa.Presentation.APL.RenderDocument"
+	Token         string          `json:"token"`              // i.e. "adocument" - string reference used to invoke subsequent directives like ExecuteCommands
 	Document      apl.APLDocument `json:"document,omitempty"` // There may be other types of documents that can go here - TODO - generify the type if this becomes apparent.
 	DataSources   DataSources     `json:"datasources,omitempty"`
 	SlotToElicit  string          `json:"slotToElicit,omitempty"`
@@ -209,10 +209,10 @@ type DataSources struct {
 		Type            string      `json:"type"`
 		ObjectID        interface{} `json:"objectId,omitempty"`
 		BackgroundImage struct {
-			ContentDescription string `json:"contentDescription,omitempty"` // For Screen Readers. Should always be included but not "required".
-			SmallSourceURL     string `json:"smallSourceUrl,omitempty"`
-			MediumSourceURL     string `json:"mediumSourceUrl,omitempty"`
-			LargeSourceURL     string `json:"largeSourceUrl,omitempty"`
+			ContentDescription string     `json:"contentDescription,omitempty"` // For Screen Readers. Should always be included but not "required".
+			SmallSourceURL     string     `json:"smallSourceUrl,omitempty"`
+			MediumSourceURL    string     `json:"mediumSourceUrl,omitempty"`
+			LargeSourceURL     string     `json:"largeSourceUrl,omitempty"`
 			Sources            []struct { // TODO - Add Source struct and create builder to append new Sources.
 				URL          string `json:"url"`
 				Size         string `json:"size"`
