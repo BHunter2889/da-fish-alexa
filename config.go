@@ -6,7 +6,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-xray-sdk-go/xray"
-	"gopkg.in/tomb.v2"
 	"log"
 	"os"
 	"sync"
@@ -25,7 +24,6 @@ type BugCasterConfig struct {
 		BugCasterLogo  string
 	}
 	APLDirectiveTemplate alexa.Directive
-	t                    tomb.Tomb
 }
 
 // Defining as constants rather than reading from config file - maybe text w/ X-ray to see how much longer reading from
@@ -45,7 +43,6 @@ var (
 	chanGK     <-chan string
 	tombFR     *KMSDecryptTomb
 	tombGK     *KMSDecryptTomb
-	t          tomb.Tomb
 	supportAPL = false
 )
 
@@ -164,7 +161,7 @@ func KMSDecryptionWaiter() {
 }
 
 func init() {
-	//log.Print("Init Xray in Config")
+	log.Print("Init Xray in Config")
 	err := xray.Configure(xray.Config{
 		LogLevel: "info",
 	})

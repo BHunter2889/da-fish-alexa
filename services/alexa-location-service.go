@@ -8,7 +8,6 @@ import (
 	"github.com/BHunter2889/da-fish-alexa/alexa"
 	"github.com/aws/aws-xray-sdk-go/xray"
 	"golang.org/x/net/context/ctxhttp"
-	"gopkg.in/tomb.v2"
 	"log"
 	"net/http"
 )
@@ -18,7 +17,6 @@ type DeviceService struct {
 	Id       string
 	Token    string
 	Endpoint string
-	t        tomb.Tomb
 }
 
 func (s *DeviceService) GetDeviceLocation(ctx context.Context) (*alexa.DeviceLocationResponse, error) {

@@ -18,11 +18,9 @@ import (
 func killAllTombs(ctx context.Context) {
 	if tombFR != nil {
 		addAndHandleXRayRecordingError(ctx, tombFR.Stop())
-	}
-	if tombGK != nil {
+	} else if tombGK != nil {
 		addAndHandleXRayRecordingError(ctx, tombGK.Stop())
-	}
-	if tombLoc != nil {
+	} else if tombLoc != nil {
 		addAndHandleXRayRecordingError(ctx, tombLoc.Stop())
 	}
 }
@@ -33,15 +31,17 @@ type DeviceLocator struct {
 	DeviceLocService *services.DeviceService
 	Ch               chan *alexa.DeviceLocationResponse
 	ErCh             chan error
-	t                tomb.Tomb
+	t                *tomb.Tomb
 }
 
 func NewDeviceLocator(ctx context.Context, ds *services.DeviceService) *DeviceLocator {
+	t, tctx := tomb.WithContext(ctx)
 	dl := &DeviceLocator{
-		ctx:              ctx,
+		ctx:              tctx,
 		DeviceLocService: ds,
 		Ch:               make(chan *alexa.DeviceLocationResponse),
 		ErCh:             make(chan error),
+		t:				  t,
 	}
 	dl.t.Go(dl.getDeviceLocation)
 	return dl
@@ -86,15 +86,17 @@ type KMSDecryptTomb struct {
 	name string
 	s    string
 	Ch   chan string
-	t    tomb.Tomb
+	t    *tomb.Tomb
 }
 
 func NewKMSDecryptTomb(ctx context.Context, s string) *KMSDecryptTomb {
+	t, tctx := tomb.WithContext(ctx)
 	kdt := &KMSDecryptTomb{
-		ctx:  ctx,
+		ctx:  tctx,
 		name: s,
 		s:    os.Getenv(s),
 		Ch:   make(chan string),
+		t: t,
 	}
 	kdt.t.Go(kdt.decrypt)
 	return kdt
@@ -144,15 +146,15 @@ func (kdt *KMSDecryptTomb) decrypt() (ctxErr error) {
 		// Conditional Exists here solely for Demoing Context Cancellation.
 		if err != nil && err.Error() == request.CanceledErrorCode {
 			close(kdt.Ch)
-			wg.Done()
 			log.Print("Context closed while in Decrypt, closed channel.")
 			addAndHandleXRayRecordingError(ctx1, err)
+			wg.Done()
 			ctxErr = err
 			return err
 		} else if err != nil {
 			close(kdt.Ch)
-			wg.Done()
 			addAndHandleXRayRecordingError(ctx1, err)
+			wg.Done()
 			ctxErr = err
 			return err
 		}
@@ -169,8 +171,8 @@ func (kdt *KMSDecryptTomb) decrypt() (ctxErr error) {
 		case <-kdt.t.Dying():
 			log.Print("kMS Tomb Dying... ")
 			close(kdt.Ch)
-			wg.Done()
 			addAndHandleXRayRecordingError(ctx1, xray.AddMetadata(ctx1, segName, "KMS Tomb is Dying"))
+			wg.Done()
 			return nil
 		}
 	})
