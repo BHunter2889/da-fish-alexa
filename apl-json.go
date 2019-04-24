@@ -1,4 +1,7 @@
-{
+package main
+
+const (
+	aplJson = `{
     "document": {
         "type": "APL",
         "version": "1.0",
@@ -14,20 +17,32 @@
             }
         ],
         "resources": [
-            {
+			{
                 "description": "Stock color for the dark theme",
                 "when": "${viewport.theme == 'dark'}",
                 "colors": {
-                    "colorTextPrimary": "#f0f1ef",
-                    "colorBackgroundOverlay": "#00000050"
+                    "colorTextPrimary": "#f0f1ef"
                 }
             },
             {
                 "description": "Stock color for the light theme",
                 "when": "${viewport.theme == 'light'}",
                 "colors": {
-                    "colorTextPrimary": "#151920",
-                    "colorBackgroundOverlay": "#FAFAFA77"
+                    "colorTextPrimary": "#151920"
+                }
+            },
+			{
+                "description": "Stock overlay color for the dark theme",
+                "when": "${viewport.theme == 'dark'}",
+                "colors": {
+                    "colorBackgroundOverlay": "#00000050"
+                }
+            },
+            {
+                "description": "Stock overlay color for the light theme",
+                "when": "${viewport.theme == 'light'}",
+                "colors": {
+					"colorBackgroundOverlay": "#FAFAFA77"
                 }
             },
             {
@@ -136,7 +151,7 @@
                     "when": "${viewport.shape == 'round'}",
                     "type": "Container",
                     "direction": "column",
-                    "height": "100vh",
+					"height": "100vh",
                     "width": "100vw",
                     "items": [
                         {
@@ -233,4 +248,5 @@
             "logoUrl": "https://s3.amazonaws.com/bugcaster-resources/bugcaster-logo.PNG"
         }
     }
-}
+}`
+)

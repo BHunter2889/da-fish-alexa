@@ -2,13 +2,13 @@ package alexa
 
 import "strings"
 
-func NewSSMLResponse(title string, text string) Response {
+func NewSSMLResponse(ssml string) Response {
 	r := Response{
 		Version: "1.0",
 		Body: ResBody{
 			OutputSpeech: &Payload{
 				Type: "SSML",
-				SSML: text,
+				SSML: ssml,
 			},
 			ShouldEndSession: true,
 		},
@@ -16,13 +16,13 @@ func NewSSMLResponse(title string, text string) Response {
 	return r
 }
 
-func NewAPLResponse(title string, text string, directives []Directive) Response {
+func NewAPLResponse(ssml string, directives []Directive) Response {
 	r := Response{
 		Version: "1.0",
 		Body: ResBody{
 			OutputSpeech: &Payload{
 				Type: "SSML",
-				SSML: text,
+				SSML: ssml,
 			},
 			Directives:       directives,
 			ShouldEndSession: true,
@@ -41,7 +41,6 @@ type SSMLBuilder struct {
 }
 
 func ParseString(text string) string {
-	text = strings.ToLower(text)
 	text = strings.Replace(text, "&", "and", -1)
 	text = strings.Replace(text, "+", "plus", -1)
 	text = strings.Replace(text, "@", "at", -1)

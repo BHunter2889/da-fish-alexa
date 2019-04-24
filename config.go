@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"github.com/BHunter2889/da-fish-alexa/alexa"
-	"github.com/BHunter2889/da-fish-alexa/alexa/apl"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-xray-sdk-go/xray"
@@ -25,8 +24,8 @@ type BugCasterConfig struct {
 		BgImageMedNeg1 string
 		BugCasterLogo  string
 	}
-	APLTemplate apl.APLDocument
-	t           tomb.Tomb
+	APLDirectiveTemplate alexa.Directive
+	t                    tomb.Tomb
 }
 
 // Defining as constants rather than reading from config file - maybe text w/ X-ray to see how much longer reading from
@@ -55,20 +54,40 @@ type AlexaRequestHandler func(context.Context, alexa.Request) (alexa.Response, e
 // Wrap The Handler so that we can use context to do some config BEFORE proceeding with handler.
 func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 	return func(ctx context.Context, request alexa.Request) (response alexa.Response, err error) {
-		log.Print(request)
+		log.Print("REQUEST: ", &request)
 
-		if &request.Context.Display != nil {
+		// TODO - Find a better way to organize this APL support
+		if &request.Context.System.Device.SupportedInterfaces != nil &&
+			&request.Context.System.Device.SupportedInterfaces.APL != nil &&
+			&request.Context.System.Device.SupportedInterfaces.APL.Runtime != nil &&
+			(request.Context.System.Device.SupportedInterfaces.APL.Runtime.MaxVersion != "" ||
+				len(request.Context.System.Device.SupportedInterfaces.APL.Runtime.MaxVersion) > 0) {
 			supportAPL = true
+			log.Println(&request.Context.System.Device.SupportedInterfaces)
+			log.Println(&request.Context.System.Device.SupportedInterfaces.APL)
+			log.Println(&request.Context.System.Device.SupportedInterfaces.APL.Runtime.MaxVersion)
+			log.Println(request.Context.System.Device.SupportedInterfaces)
+			log.Println(request.Context.System.Device.SupportedInterfaces.APL)
+			log.Println(request.Context.System.Device.SupportedInterfaces.APL.Runtime.MaxVersion)
 		}
+		log.Print("APL_IS_SUPPORTED: ", supportAPL)
 
 		// Put up a Border Wall (which they can very easily get around)
 		if request.Body.Locale != "en-US" && request.Body.Locale != "en-CA" {
 			return alexa.NewUnsupportedLocationResponse(), nil
 		}
 
-		// If this is a Launch Request, we don't need Config at all, so kick it back out before it causes problems
+		// If this is a Launch Request, we only need APL Config, so kick it back out
+		// after setting images info and before it causes problems
 		if request.Body.Type == "LaunchRequest" {
+			cfg = new(BugCasterConfig)
+			conditionallyAddAPLSupportToConfig()
 			return HandleLaunchRequest(ctx, request), nil
+		}
+		if request.Body.Intent.Name == alexa.HelpIntent {
+			cfg = new(BugCasterConfig)
+			conditionallyAddAPLSupportToConfig()
+			return HandleHelpIntent(ctx, request), nil
 		}
 
 		// Benzos PRN - Take once at bedtime as needed. (Defer a panic resolution which returns a default error voice response to the user.)
@@ -78,6 +97,19 @@ func ContextConfigWrapper(h AlexaRequestHandler) AlexaRequestHandler {
 				log.Print(err)
 				log.Print(r)
 				response = alexa.NewDefaultErrorResponse()
+				if supportAPL {
+					imageUrl := cfg.ImageUrls.BgImageMedNeg1
+					rd := cfg.APLDirectiveTemplate
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.SmallSourceURL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.MediumSourceURL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.LargeSourceURL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[0].URL = imageUrl
+					rd.DataSources.BodyTemplate1Data.BackgroundImage.Sources[1].URL = imageUrl
+					rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Type = "PlainText"
+					rd.DataSources.BodyTemplate1Data.TextContent.PrimaryText.Text = response.Body.OutputSpeech.SSML
+					rd.DataSources.BodyTemplate1Data.LogoURL = cfg.ImageUrls.BugCasterLogo
+					response.AddDirectives(alexa.NewDirectivesList("BugCaster Under Maintenance", rd))
+				}
 			}
 		}()
 
@@ -152,19 +184,28 @@ func (cfg *BugCasterConfig) LoadConfig(ctx context.Context) (err error) {
 	}))
 	cfg.GeoUrl = os.Getenv("GEO_SERVICE_URL")
 
+	conditionallyAddAPLSupportToConfig()
+
+	return
+}
+
+func conditionallyAddAPLSupportToConfig() {
 	if supportAPL {
+		wg.Add(1)
+		// Consider Adding X-Ray Support to this...?
+		go func() {
+			defer wg.Done()
+			rd := alexa.Directive{}
+			if err := alexa.ExtractNewRenderDocDirectiveFromString("bugcaster-default", aplJson, &rd); err != nil {
+				log.Print("ERROR READING APL TEMPLATE", err)
+			}
+			cfg.APLDirectiveTemplate = rd
+		}()
 		cfg.ImageUrls.BgImageMedPos1 = os.Getenv("BG_IMAGE_MED_POS_1")
 		cfg.ImageUrls.BgImageMedPos2 = os.Getenv("BG_IMAGE_MED_POS_2")
 		cfg.ImageUrls.BgImageMedNeg1 = os.Getenv("BG_IMAGE_MED_NEG_1")
 		cfg.ImageUrls.BugCasterLogo = os.Getenv("BUGCASTER_LOGO")
-		cfg.APLTemplate = apl.APLDocument{}
-
-		// Consider Adding X-Ray Support to this...?
-		go func() {
-			err = apl.ReadAplDocumentFromJsonFile(AplDocFilename, cfg.APLTemplate)
-		}()
 	}
-	return
 }
 
 func addAndHandleXRayRecordingError(ctx context.Context, err error) {

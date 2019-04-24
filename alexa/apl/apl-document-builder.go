@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// Note: This won't work as the standard file also includes a sibling DataSources object
 func ReadAplDocumentFromJsonFile(fileName string, out APLDocument) error {
 	jsonFile, err := os.Open(fileName)
 	if err != nil {
@@ -40,10 +41,11 @@ type APLDocument struct {
 	} `json:"import,omitempty"`
 	Resources []struct {
 		Description string `json:"description,omitempty"`
+		When        string `json:"when,omitempty"`
 		Colors      struct {
-			ColorTextPrimary string `json:"colorTextPrimary"`
+			ColorTextPrimary       string `json:"colorTextPrimary,omitempty"`
+			ColorBackgroundOverlay string `json:"colorBackgroundOverlay,omitempty"`
 		} `json:"colors,omitempty"`
-		When       string `json:"when,omitempty"`
 		Dimensions struct {
 			TextSizeBody          int `json:"textSizeBody,omitempty"`
 			TextSizePrimary       int `json:"textSizePrimary,omitempty"`
