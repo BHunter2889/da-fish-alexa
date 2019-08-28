@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/BHunter2889/da-fish-alexa/alexa"
+	"github.com/BHunter2889/go-alexa-devkit/alexa"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-xray-sdk-go/xray"

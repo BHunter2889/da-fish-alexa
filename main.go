@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/BHunter2889/da-fish-alexa/alexa"
+	"github.com/BHunter2889/go-alexa-devkit/alexa"
 	"github.com/BHunter2889/da-fish-alexa/services"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-xray-sdk-go/xray"
