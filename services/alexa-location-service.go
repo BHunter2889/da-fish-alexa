@@ -1,16 +1,15 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/BHunter2889/da-fish-alexa/alexa"
-	"log"
-	"net/http"
-	"context"
 	"github.com/aws/aws-xray-sdk-go/xray"
 	"golang.org/x/net/context/ctxhttp"
-	"gopkg.in/tomb.v2"
+	"log"
+	"net/http"
 )
 
 type DeviceService struct {
@@ -18,7 +17,6 @@ type DeviceService struct {
 	Id       string
 	Token    string
 	Endpoint string
-	t 		 tomb.Tomb
 }
 
 func (s *DeviceService) GetDeviceLocation(ctx context.Context) (*alexa.DeviceLocationResponse, error) {
@@ -36,8 +34,8 @@ func (s *DeviceService) GetDeviceLocation(ctx context.Context) (*alexa.DeviceLoc
 	req.Header.Add("Authorization", bearer)
 
 	resp, err := ctxhttp.Do(ctx, xray.Client(nil), req)
-	if err != nil || resp.StatusCode == 403 {
-		if resp.StatusCode == 403 {
+	if err != nil || resp.StatusCode == http.StatusForbidden {
+		if resp.StatusCode == http.StatusForbidden {
 			err = errors.New(resp.Status)
 		}
 		log.Print("Error processing device location response")

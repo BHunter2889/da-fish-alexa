@@ -1,5 +1,10 @@
 package alexa
 
+// Credit - Nic Raboy: Modified version of Arien Malec's work
+// https://github.com/nraboy/alexa-slick-dealer/blob/master/alexa/request.go
+// https://github.com/arienmalec/alexa-go
+// https://medium.com/@amalec/alexa-skills-with-go-54db0c21e758
+
 const (
 	HelpIntent   = "AMAZON.HelpIntent"
 	CancelIntent = "AMAZON.CancelIntent"

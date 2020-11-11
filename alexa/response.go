@@ -1,7 +1,6 @@
 package alexa
 
 import (
-	"da-fish-alexa/alexa"
 	"log"
 )
 
@@ -25,7 +24,7 @@ func NewSimpleResponse(title string, text string) Response {
 }
 
 func NewPermissionsRequestResponse() Response {
-	var builder alexa.SSMLBuilder
+	var builder SSMLBuilder
 	builder.Say("Bug Caster was unable to access your device's zip code and country information. ")
 	builder.Pause("750")
 	builder.Say("If you have not enabled Bug Caster to access this information, ")
@@ -51,7 +50,7 @@ func NewPermissionsRequestResponse() Response {
 }
 
 func NewUnsupportedLocationResponse() Response {
-	var builder alexa.SSMLBuilder
+	var builder SSMLBuilder
 	builder.Say("Bug Caster does not currently support device locales listed outside the United States or Canada. ")
 	builder.Pause("750")
 	builder.Say("If you would like us to provide support for your locale, ")
@@ -70,9 +69,9 @@ func NewUnsupportedLocationResponse() Response {
 				SSML: builder.Build(),
 			},
 			Card: &Payload{
-				Type:        "Simple",
-				Title:       "Unsupported Locale",
-				Text:        "Supported Device Locales: United States & Canada",
+				Type:  "Simple",
+				Title: "Unsupported Locale",
+				Text:  "Supported Device Locales: United States & Canada",
 			},
 			ShouldEndSession: true,
 		},
@@ -82,7 +81,7 @@ func NewUnsupportedLocationResponse() Response {
 }
 
 func NewLaunchRequestGetPermissionsResponse() Response {
-	var builder alexa.SSMLBuilder
+	var builder SSMLBuilder
 	builder.Say("Welcome to Bug Caster!")
 	builder.Pause("1000")
 	builder.Say("Bug Caster uses solunar theory and applied analytics to determine how probable fish activity translates to quality of fishing by the hour.")
@@ -132,7 +131,7 @@ func NewLaunchRequestGetPermissionsResponse() Response {
 }
 
 func NewDefaultErrorResponse() Response {
-	var builder alexa.SSMLBuilder
+	var builder SSMLBuilder
 	builder.Say("Bug Caster caught a snag downstream while processing your request. ")
 	builder.Pause("750")
 	builder.Say("I can't blame the wind, ")

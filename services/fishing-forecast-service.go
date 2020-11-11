@@ -1,13 +1,13 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/aws/aws-xray-sdk-go/xray"
+	"golang.org/x/net/context/ctxhttp"
 	"log"
 	"net/http"
-	"golang.org/x/net/context/ctxhttp"
-	"context"
-	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 type ForecasterService struct {
